@@ -1,7 +1,6 @@
 package com.chainsys.coursemanagement.controller;
 
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.ArrayList;
 
 import javax.servlet.RequestDispatcher;
@@ -40,24 +39,27 @@ public class ViewStatusServlet extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
 
 		CourseDAO courseDAO = new CourseDAO();
+		ArrayList<Courses> courseList = null;
 		try {
-			ArrayList<Courses> courseList = courseDAO.selectAllCourse();
-
-			request.setAttribute("COURSELIST", courseList);
+			courseList = courseDAO.selectAllCourse();
+			if (courseList != null) {
+				request.setAttribute("COURSELIST", courseList);
+				RequestDispatcher requestDispatcher = request
+						.getRequestDispatcher("viewstatus.jsp");
+				requestDispatcher.forward(request, response);
+			} else {
+				RequestDispatcher requestDispatcher = request
+						.getRequestDispatcher("pagenotfound.html");
+				requestDispatcher.forward(request, response);
+			}
+		} catch (Exception e) {
 			RequestDispatcher requestDispatcher = request
-					.getRequestDispatcher("viewstatus.jsp");
+					.getRequestDispatcher("pagenotfound.html");
 			requestDispatcher.forward(request, response);
-
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
+
 	}
 
 	/**
@@ -66,40 +68,50 @@ public class ViewStatusServlet extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
 
-		int courseId = Integer.parseInt(request.getParameter("courseId"));
-		Topic topic = new Topic();
-		Courses courses = new Courses();
-		courses.setId(courseId);
-		topic.setCourse(courses);
-		EmployeeTopic employeeTopic = new EmployeeTopic();
-		Employee employee=new Employee();
-		HttpSession httpSession=request.getSession();
-		int empid=(int)httpSession.getAttribute("empid");
-		employee.setId(empid);
-		employeeTopic.setEmployee(employee);
-		employeeTopic.setTopic(topic);
-
-		EmployeeTopicStatusDAO employeeTopicStatusDAO = new EmployeeTopicStatusDAO();
-		try {
-			ArrayList<EmployeeTopic> employeeTopicList = employeeTopicStatusDAO
-					.selectTopicsStatusList(employeeTopic);
+		String courseName = request.getParameter("courseId");
 		
-			String topicStatusList = null;
-			for (EmployeeTopic employeeTopicStatus : employeeTopicList) {
-				
-				topicStatusList =topicStatusList+","+employeeTopicStatus.getTopic().getName()
-						+ "," + employeeTopicStatus.getStatus().getName() ;
-							}
-			response.getWriter().write(topicStatusList);
+		if (courseName.equals("Select")) {
+			response.getWriter().write("null");
+		} else {
+			EmployeeTopic employeeTopic = new EmployeeTopic();
+			int courseId = Integer.parseInt(courseName);
+			Topic topic = new Topic();
+			Courses courses = new Courses();
+			courses.setId(courseId);
+			topic.setCourse(courses);
+			Employee employee = new Employee();
+			HttpSession httpSession = request.getSession();
+			int empid = (int) httpSession.getAttribute("empid");
+			employee.setId(empid);
+			employeeTopic.setEmployee(employee);
+			employeeTopic.setTopic(topic);
 
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			EmployeeTopicStatusDAO employeeTopicStatusDAO = new EmployeeTopicStatusDAO();
+
+			ArrayList<EmployeeTopic> employeeTopicList = null;
+			try {
+				employeeTopicList = employeeTopicStatusDAO
+						.selectTopicsStatusList(employeeTopic);
+
+				String topicStatusList = null;
+				if (employeeTopicList != null && !employeeTopicList.isEmpty()) {
+					for (EmployeeTopic employeeTopicStatus : employeeTopicList) {
+						topicStatusList = topicStatusList + ","
+								+ employeeTopicStatus.getTopic().getName()
+								+ ","
+								+ employeeTopicStatus.getStatus().getName();
+					}
+					response.getWriter().write(topicStatusList);
+				} else {
+					
+					response.getWriter().write("null");
+				}
+			} catch (Exception e) {
+				
+				response.getWriter().write("null");
+			}
+
 		}
 	}
 

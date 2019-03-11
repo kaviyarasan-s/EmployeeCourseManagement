@@ -19,9 +19,7 @@
 										function() {
 
 											$("#topic").empty();
-											$
-													.post(
-															'ViewTopicServlet',
+											$.post('ViewTopicServlet',
 															{
 																courseId : $(
 																		"#course")
@@ -33,7 +31,7 @@
 																		.split(',');
 																$('#topic')
 																		.append(
-																				"<option value=''>Select</option>");
+																				"<option value='Select'>Select</option>");
 																for ( var item in list) {
 
 																	$('#topic')
@@ -47,29 +45,24 @@
 
 										});
 
-						$("#topic")
-								.change(
-										function() {
-
+						$("#topic").change(function() {
 											$('#topicexists').text("");
-											$
-													.ajax({
+											$.ajax({
 														type : "POST",
 														url : "AddStatusServlet",
 														data : {
 															topicname : $(
 																	"#topic")
 																	.val(),
-															courseId : $(
+															coursename : $(
 																	"#course")
 																	.val(),
-															button : "status"
+															button : "checkstatusexist"
 														},
 														success : function(data) {
 
 															if (data == '1') {
-																$(
-																		'#topicexists')
+																$('#topicexists')
 																		.text(
 																				"status already updated.");
 															}
@@ -88,7 +81,7 @@
 	<form method="post" action="AddStatusServlet">
 		<div>
 			Course List: <select name="coursename" id="course">
-				<option value="">Select</option>
+				<option value="Select">Select</option>
 				<c:forEach var="courseList" items="${COURSELIST}">
 					<option value="${courseList.id}">${courseList.name}</option>
 				</c:forEach>
@@ -96,13 +89,13 @@
 		</div>
 		<div style="margin-top: 1%">
 			Topic List: <select name="topicname" id="topic">
-				<option value=''>Select</option>
+				<option value='Select'>Select</option>
 			</select>
 		</div>
 		<div id="topicexists"></div>
 		<div style="margin-top: 1%">
 			Status:<select name="statusname" id="status">
-				<option value="">Select</option>
+				<option value="Select">Select</option>
 				<c:forEach var="statusList" items="${STATUSLIST}">
 					<option value="${statusList.id}">${statusList.name}</option>
 				</c:forEach>
@@ -118,7 +111,7 @@
 			out.print(request.getAttribute("message"));
 		}
 	%>
-	<a href="employeeoperation.html">Back</a>
+	<td><a href="HomeServlet">back</a></td>
 
 </body>
 </html>

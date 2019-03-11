@@ -1,7 +1,6 @@
 package com.chainsys.coursemanagement.controller;
 
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.ArrayList;
 
 import javax.servlet.RequestDispatcher;
@@ -38,23 +37,24 @@ public class ViewTopicServlet extends HttpServlet {
 
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-
 		CourseDAO courseDAO = new CourseDAO();
-		ArrayList<Courses> courseList;
+		ArrayList<Courses> courseList = null;
 		try {
 			courseList = courseDAO.selectAllCourse();
-			request.setAttribute("COURSELIST", courseList);
+			if (courseList != null) {
+				request.setAttribute("COURSELIST", courseList);
+				RequestDispatcher requestDispatcher = request
+						.getRequestDispatcher("viewtopic.jsp");
+				requestDispatcher.forward(request, response);
+			} else {
+				RequestDispatcher requestDispatcher = request
+						.getRequestDispatcher("pagenotfound.html");
+				requestDispatcher.forward(request, response);
+			}
+		} catch (Exception e) {
 			RequestDispatcher requestDispatcher = request
-					.getRequestDispatcher("viewtopic.jsp");
+					.getRequestDispatcher("pagenotfound.html");
 			requestDispatcher.forward(request, response);
-
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
 
 	}
@@ -65,33 +65,28 @@ public class ViewTopicServlet extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		int courseId = Integer.parseInt(request.getParameter("courseId"));
 
+		int courseId = Integer.parseInt(request.getParameter("courseId"));
 		Courses course = new Courses();
 		course.setId(courseId);
-
 		course.setStatus(1);
 		TopicDAO topicDAO = new TopicDAO();
 		ArrayList<Topic> topicList = null;
 		try {
 			topicList = topicDAO.selectAllTopicsByCourse(course);
-			String topicListString = bindTopicList(topicList);
-			response.getWriter().write(topicListString);
-
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			if (topicList != null) {
+				String topicListString = bindTopicList(topicList);
+				response.getWriter().write(topicListString);
+			}
+		} catch (Exception e) {
+			response.getWriter().write("Unable to find topics");
 		}
 
 	}
 
 	public String bindTopicList(ArrayList<Topic> topicsList) {
 		String topic = "";
-
 		int arraySize = topicsList.size();
 		for (int i = 0; i < arraySize; i++) {
 			topic = topic + topicsList.get(i).getName();

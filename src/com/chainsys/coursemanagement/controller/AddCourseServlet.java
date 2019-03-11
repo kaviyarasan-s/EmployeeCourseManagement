@@ -1,7 +1,7 @@
 package com.chainsys.coursemanagement.controller;
 
 import java.io.IOException;
-import java.sql.SQLException;
+import java.time.LocalDateTime;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -9,9 +9,11 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import com.chainsys.coursemanagement.dao.CourseDAO;
 import com.chainsys.coursemanagement.model.Courses;
+import com.chainsys.coursemanagement.validate.CourseValidation;
 
 /**
  * Servlet implementation class AddCourseServlet
@@ -38,43 +40,50 @@ public class AddCourseServlet extends HttpServlet {
 	}
 
 	/**
+	 * @throws IOException
+	 * @throws ServletException
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
 	 *      response)
 	 */
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-
 		String courseName = request.getParameter("coursename");
-		if (courseName == null || courseName.isEmpty()) {
+		Courses course = new Courses();
+		course.setName(courseName);
+		course.setStatus(1);
+		course.setCreatedOn(LocalDateTime.now());
+		HttpSession httpSession=request.getSession();
+		course.setCreatedBy((int)httpSession.getAttribute("empid"));
+		
+		boolean validationResult = CourseValidation
+				.addCoursesValidation(course);
+		if (!validationResult) {
 			request.setAttribute("message", "coursename is empty");
 			RequestDispatcher requestDispatcher = request
 					.getRequestDispatcher("addcourse.jsp");
 			requestDispatcher.forward(request, response);
 		} else {
-			Courses course = new Courses();
-			course.setName(courseName);
-			course.setStatus(1);
 			CourseDAO courseDAO = new CourseDAO();
+
+			boolean addCourseResult = false;
 			try {
-				int addCourseResult = courseDAO.addCourse(course);
-				if (addCourseResult > 0) {
+				addCourseResult = courseDAO.addCourse(course);
+				if (addCourseResult) {
 					request.setAttribute("message",
 							"Course added successfully.");
-
 				} else {
 					request.setAttribute("message", "Course not added.");
 				}
 				RequestDispatcher requestDispatcher = request
 						.getRequestDispatcher("addcourse.jsp");
 				requestDispatcher.forward(request, response);
-			} catch (ClassNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			} catch (Exception e) {
+				request.setAttribute("message", e.getMessage());
+				RequestDispatcher requestDispatcher = request
+						.getRequestDispatcher("addcourse.jsp");
+				requestDispatcher.forward(request, response);
 			}
+
 		}
 
 	}

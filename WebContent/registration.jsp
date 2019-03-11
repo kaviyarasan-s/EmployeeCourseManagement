@@ -9,27 +9,36 @@
 </head>
 <body>
 	<form method="post" action="RegistrationServlet">
-		Firstname:<input type="text" name="firstname"> <br><br>
-		Lastname:<input	type="text" name="lastname"> <br><br>
-		Phonenumber:<input type="text" name="phonenumber"> <br><br> 
-		Email:<input type="text" name="email"> <br><br>
-		 Password:<input type="text" name="password"> <br><br>
-		 Department:<select name="department">
-			<br><br>
-			<option value="">Select</option>
+		Firstname:<input type="text" name="firstname"> <br> <br>
+		Lastname:<input type="text" name="lastname"> <br> <br>
+		Phonenumber:<input type="text" name="phonenumber"> <br> <br>
+		Email:<input type="text" name="email"> <br> <br>
+		Password:<input type="text" name="password"> <br> <br>
+		Department:<select name="department">
+			<br>
+			<br>
+			<option value="Select">Select</option>
 			<c:forEach var="departmentlist" items="${DEPARTMENTLIST}">
 				<option value="${departmentlist.id}">${departmentlist.name}</option>
 			</c:forEach>
-		</select> <br><br> 
-		Job: <select name="job">
-			<option value="">Select</option>
+		</select> <br> <br> Job: <select name="job">
+			<option value="Select">Select</option>
 			<c:forEach var="joblist" items="${JOBLIST}">
 				<option value="${joblist.id}">${joblist.name}</option>
 			</c:forEach>
-		</select>
-		<br><br>
+		</select> <br> <br> Select Manager: <select name="managername">
+			<option value="Select">Select</option>
+			<c:forEach var="employeeList" items="${MANAGERLIST}">
+				<option value="${employeeList.id}">${employeeList.firstName}${employeeList.lastName}</option>
+			</c:forEach>
+		</select> <br> <br>
 		<button type="submit">Register</button>
 	</form>
-	<a href="adminoperation.html">back</a>
+	<div>
+		<%if(request.getAttribute("message")!=null){
+		out.print(request.getAttribute("message"));
+		}%>
+	</div>
+	<a href="HomeServlet">back</a>
 </body>
 </html>

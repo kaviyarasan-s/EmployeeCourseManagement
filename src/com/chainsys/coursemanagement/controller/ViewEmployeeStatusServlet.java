@@ -1,7 +1,6 @@
 package com.chainsys.coursemanagement.controller;
 
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.ArrayList;
 
 import javax.servlet.RequestDispatcher;
@@ -39,23 +38,21 @@ public class ViewEmployeeStatusServlet extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		CourseDAO courseDAO = new CourseDAO();
-		try {
-			ArrayList<Courses> courseList = courseDAO.selectAllCourse();
 
+		CourseDAO courseDAO = new CourseDAO();
+		ArrayList<Courses> courseList = null;
+		try {
+			courseList = courseDAO.selectAllCourse();
 			request.setAttribute("COURSELIST", courseList);
 			RequestDispatcher requestDispatcher = request
 					.getRequestDispatcher("viewemployeestatus.jsp");
 			requestDispatcher.forward(request, response);
-
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		} catch (Exception e) {
+			RequestDispatcher requestDispatcher = request
+					.getRequestDispatcher("pagenotfound.html");
+			requestDispatcher.forward(request, response);
 		}
+
 	}
 
 	/**
@@ -64,40 +61,54 @@ public class ViewEmployeeStatusServlet extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		int employeeId = Integer.parseInt(request.getParameter("employeeId"));
-		int courseId = Integer.parseInt(request.getParameter("courseId"));
-		Topic topic = new Topic();
-		Courses courses = new Courses();
-		courses.setId(courseId);
-		topic.setCourse(courses);
-		EmployeeTopic employeeTopic = new EmployeeTopic();
-		Employee employee = new Employee();
-		employee.setId(employeeId);
-		employeeTopic.setEmployee(employee);
-		employeeTopic.setTopic(topic);
 
-		EmployeeTopicStatusDAO employeeTopicStatusDAO = new EmployeeTopicStatusDAO();
-		try {
-			ArrayList<EmployeeTopic> employeeTopicList = employeeTopicStatusDAO
-					.selectTopicsStatusList(employeeTopic);
-			
-			String topicStatusList = null;
-			for (EmployeeTopic employeeTopicStatus : employeeTopicList) {
+		String courseName = request.getParameter("courseId");
+		if (courseName.equals("Select")) {
+			response.getWriter().write("");
+		} else {
+			String employeeName = request.getParameter("employeeId");
+			if (!employeeName.equals(null) || !employeeName.isEmpty()) {
+				int employeeId = Integer.parseInt(employeeName);
+				int courseId = Integer.parseInt(courseName);
+				Topic topic = new Topic();
+				Courses courses = new Courses();
+				courses.setId(courseId);
+				topic.setCourse(courses);
+				EmployeeTopic employeeTopic = new EmployeeTopic();
+				Employee employee = new Employee();
+				employee.setId(employeeId);
+				employeeTopic.setEmployee(employee);
+				employeeTopic.setTopic(topic);
 
-				topicStatusList = topicStatusList + ","
-						+ employeeTopicStatus.getTopic().getName() + ","
-						+ employeeTopicStatus.getStatus().getName();
+				EmployeeTopicStatusDAO employeeTopicStatusDAO = new EmployeeTopicStatusDAO();
+
+				ArrayList<EmployeeTopic> employeeTopicList = null;
+				try {
+					employeeTopicList = employeeTopicStatusDAO
+							.selectTopicsStatusList(employeeTopic);
+					String topicStatusList = null;
+					if (employeeTopicList != null&& !employeeTopicList.isEmpty()) {
+
+						for (EmployeeTopic employeeTopicStatus : employeeTopicList) {
+
+							topicStatusList = topicStatusList + ","
+									+ employeeTopicStatus.getTopic().getName()
+									+ ","
+									+ employeeTopicStatus.getStatus().getName();
+						}
+						response.getWriter().write(topicStatusList);
+					} else {
+						response.getWriter().write("");
+					}
+
+				} catch (Exception e) {
+					response.getWriter().write("");
+				}
+			} else {
+				RequestDispatcher requestDispatcher = request
+						.getRequestDispatcher("pagenotfound.html");
+				requestDispatcher.forward(request, response);
 			}
-			response.getWriter().write(topicStatusList);
-
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
 	}
-
 }

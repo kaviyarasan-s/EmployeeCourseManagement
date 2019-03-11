@@ -16,24 +16,30 @@
 				$("#course").change(
 						function() {
 							$('#topiclist').empty();
+							$('#message').empty();
 							$.post('ViewTopicServlet', {
 								courseId : $("#course").val()
 							}, function(response) {
 
 								var list = response.split(',');
+								
 								var i = 0;
-								$('#topiclist').append(
-										"<tr><td>" + "S.no" + "</td>" + "<td>"
-												+ "Name" + "</td></tr>");
-								for ( var item in list) {
-									i = i + 1;
-									$('#topiclist')
-											.append(
-													"<tr><td>" + (i) + "</td>"
-															+ "<td>"
-															+ list[item]
-															+ "</td></tr>");
+								if (list != '') {
+									$('#topiclist').append("Topics list:");
+									$('#topiclist').append(
+											"<tr><td>" + "S.no" + "</td>"
+													+ "<td>" + "Name"
+													+ "</td></tr>");
+									for ( var item in list) {
+										i = i + 1;
+										$('#topiclist').append(
+												"<tr><td>" + (i) + "</td>"
+														+ "<td>" + list[item]
+														+ "</td></tr>");
 
+									}
+								} else {
+									$('#message').text("Topics not found!")
 								}
 
 							});
@@ -55,9 +61,10 @@
 		</select>
 
 	</form>
-	<br> Topics list:
+	<br>
 	<table id="topiclist">
 	</table>
+	<div id="message"></div>
 	<a href="topicoperation.html">Back</a>
 </body>
 </html>

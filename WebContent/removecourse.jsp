@@ -14,7 +14,7 @@
 
 	<form method="post" action="RemoveCourseServlet">
 		<select name="coursename">
-			<option value="">Select</option>
+			<option value="Select">Select</option>
 			<c:forEach var="courseList" items="${COURSELIST}">
 				<option value="${courseList.id}">${courseList.name}</option>
 			</c:forEach>

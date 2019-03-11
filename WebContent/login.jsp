@@ -5,20 +5,26 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-<title>login</title>
-
-
+<title>login page</title>
 </head>
 <body>
 	<form method="post" action="LoginServlet">
-		Username: <input type="text" name="username"> Password: <input
-			type="password" name="password">
-		<button type="submit">Login</button>
+		<div>
+			User name: <input type="text" name="username" required> *required
+		</div>
+		<div style="margin-top:1%">
+			Password: <input type="password" name="password" required> *required
+		</div>
+		<div style="margin-top:1%">
+			<button type="submit">Login</button>
+		</div>
 	</form>
-	
+
+	<div>
 		<c:if test="${show}">
 			<h4>${message}</h4>
 		</c:if>
-	
+	</div>
+
 </body>
 </html>

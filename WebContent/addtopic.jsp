@@ -12,7 +12,7 @@
 	<form method="post" action="AddTopicServlet">
 		<div>
 			Course List: <select name="coursename">
-				<option value="">Select</option>
+				<option value="Select">Select</option>
 				<c:forEach var="courseList" items="${COURSELIST}">
 					<option value="${courseList.id}">${courseList.name}</option>
 				</c:forEach>
@@ -23,16 +23,20 @@
 			Topic name:<input type="text" name="topicname">
 		</div>
 		<div style="margin-top: 1%">
-			<button type="submit">Add</button>
+			<button type="submit">Add Topic</button>
 		</div>
 	</form>
 
-	<%
-		if (request.getAttribute("message") != null) {
-			request.getAttribute("message");
-		}
-	%>
-	<a href="topicoperation.html">back</a>
+	<div>
+		<%
+			if (request.getAttribute("message") != null) {
+				out.print(request.getAttribute("message"));
+			}
+		%>
+	</div>
+	<div>
+		<a href="topicoperation.html">back</a>
+	</div>	
 
 </body>
 </html>

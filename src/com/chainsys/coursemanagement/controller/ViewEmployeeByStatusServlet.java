@@ -1,7 +1,6 @@
 package com.chainsys.coursemanagement.controller;
 
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.ArrayList;
 
 import javax.servlet.RequestDispatcher;
@@ -40,31 +39,41 @@ public class ViewEmployeeByStatusServlet extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
 		CourseDAO courseDAO = new CourseDAO();
 		StatusDAO statusDAO = new StatusDAO();
-		ArrayList<Courses> courseList;
+		ArrayList<Courses> courseList = null;
+		ArrayList<Status> statusList = null;
 		try {
 			courseList = courseDAO.selectAllCourse();
-			request.setAttribute("COURSELIST", courseList);
-			ArrayList<Status> statusList = statusDAO.selectAllStatus();
-			request.setAttribute("STATUSLIST", statusList);
-			
-			if (request.getAttribute("searched") != null)
-				request.setAttribute("permission", true);
-			else
-				request.setAttribute("permission", false);
-			
+			if (courseList != null) {
+				request.setAttribute("COURSELIST", courseList);
+				statusList = statusDAO.selectAllStatus();
+				request.setAttribute("STATUSLIST", statusList);
+				if (statusList != null) {
+					if (request.getAttribute("searched") != null)
+						request.setAttribute("permission", true);
+					else
+						request.setAttribute("permission", false);
+
+					RequestDispatcher requestDispatcher = request
+							.getRequestDispatcher("viewemployeebystatus.jsp");
+					requestDispatcher.forward(request, response);
+				} else {
+					RequestDispatcher requestDispatcher = request
+							.getRequestDispatcher("pagenotfound.html");
+					requestDispatcher.forward(request, response);
+				}
+			} else {
+				RequestDispatcher requestDispatcher = request
+						.getRequestDispatcher("pagenotfound.html");
+				requestDispatcher.forward(request, response);
+			}
+		} catch (Exception e) {
 			RequestDispatcher requestDispatcher = request
-					.getRequestDispatcher("viewemployeebystatus.jsp");
+					.getRequestDispatcher("pagenotfound.html");
 			requestDispatcher.forward(request, response);
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
+
 	}
 
 	/**
@@ -73,38 +82,47 @@ public class ViewEmployeeByStatusServlet extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
+		String courseName = request.getParameter("coursename");
+		String statusName = request.getParameter("statusname");
 
-		try {
-
-			int courseId = Integer.parseInt(request.getParameter("coursename"));
+		if (!courseName.equals("Select")) {
+			int courseId = Integer.parseInt(courseName);
 			Topic topic = new Topic();
 			Courses courses = new Courses();
 			courses.setId(courseId);
 			topic.setCourse(courses);
-			int statusId = Integer.parseInt(request.getParameter("statusname"));
-
+			int statusId = Integer.parseInt(statusName);
 			Status status = new Status();
 			status.setId(statusId);
 			EmployeeTopic employeeTopic = new EmployeeTopic();
 			employeeTopic.setTopic(topic);
-
 			employeeTopic.setStatus(status);
 			EmployeeTopicStatusDAO employeeTopicStatusDAO = new EmployeeTopicStatusDAO();
 
-			ArrayList<EmployeeTopic> employeeTopicStatus = employeeTopicStatusDAO
-					.selectEmployeeByStatus(employeeTopic);
-
-			request.setAttribute("EMPLOYEESTATUSLIST", employeeTopicStatus);
-			request.setAttribute("searched", true);
-			doGet(request, response);
-
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			ArrayList<EmployeeTopic> employeeTopicStatus;
+			try {
+				employeeTopicStatus = employeeTopicStatusDAO
+						.selectEmployeeByStatus(employeeTopic);
+				if (employeeTopicStatus != null&&!employeeTopicStatus.isEmpty()) {
+					request.setAttribute("EMPLOYEESTATUSLIST",
+							employeeTopicStatus);
+					request.setAttribute("searched", true);
+					doGet(request, response);
+				} else {
+					
+					request.setAttribute("searched", null);
+					doGet(request, response);
+				}
+			} catch (Exception e) {
+				
+				RequestDispatcher requestDispatcher = request
+						.getRequestDispatcher("pagenotfound.html");
+				requestDispatcher.forward(request, response);
+			}
+		} else {
+			RequestDispatcher requestDispatcher = request
+					.getRequestDispatcher("pagenotfound.html");
+			requestDispatcher.forward(request, response);
 		}
 	}
 

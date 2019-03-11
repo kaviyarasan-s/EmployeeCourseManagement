@@ -9,18 +9,22 @@
 </head>
 <body>
 	<form method="post" action="AddCourseServlet">
-
-		Course Name:<input type="text" name="coursename">
-		<button type="submit">Add</button>
+		<div>
+			Course Name:<input type="text" name="coursename" required>
+		</div>
+		<div>
+			<button type="submit">Add</button>
+		</div>
 	</form>
-
-	<%
-		if (request.getAttribute("message") != null) {
-			out.print(request.getAttribute("message"));
-		}
-	%>
-
-
-	<a href="courseoperation.html">back</a>
+	<div>
+		<%
+			if (request.getAttribute("message") != null) {
+				out.print(request.getAttribute("message"));
+			}
+		%>
+	</div>
+	<div>
+		<a href="courseoperation.html">back</a>
+	</div>
 </body>
 </html>

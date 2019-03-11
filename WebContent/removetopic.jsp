@@ -40,26 +40,35 @@
 
 
 	<form method="post" action="RemoveTopicServlet">
-		Course List: <select name="coursename" id="course">
-			<option value="">Select</option>
-			<c:forEach var="courseList" items="${COURSELIST}">
-				<option value="${courseList.id}">${courseList.name}</option>
-			</c:forEach>
+		<div>
+			Course List: <select name="coursename" id="course">
+				<option value="Select">Select</option>
+				<c:forEach var="courseList" items="${COURSELIST}">
+					<option value="${courseList.id}">${courseList.name}</option>
+				</c:forEach>
 
-		</select> Topic List: <select name="topicname" id="topic">
-			<option value="">Select</option>
+			</select>
+		</div>
+		<div style="margin-top: 1%">
+			Topic List: <select name="topicname" id="topic">
+				<option value="Select">Select</option>
 
 
-		</select>
-
-		<button type="submit">Remove</button>
+			</select>
+		</div>
+		<div style="margin-top: 1%">
+			<button type="submit">Remove</button>
+		</div>
 	</form>
-	<%
-		if (request.getAttribute("message") != null) {
-			request.getAttribute("message");
-		}
-	%>
-	
-	<a href="topicoperation.html">Back</a>
+	<div style="margin-top: 1%">
+		<%
+			if (request.getAttribute("message") != null) {
+				out.print(request.getAttribute("message"));
+			}
+		%>
+	</div>
+	<div style="margin-top: 1%">
+		<a href="topicoperation.html">Back</a>
+	</div>
 </body>
 </html>

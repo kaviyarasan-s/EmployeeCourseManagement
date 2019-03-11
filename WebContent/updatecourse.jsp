@@ -11,26 +11,30 @@
 	<form method="post" action="UpdateCourseServlet">
 		<div>
 			Select Old Course Name: <select name="oldcoursename">
-				<option value="">Select</option>
+				<option value="Select">Select</option>
 				<c:forEach var="courseList" items="${COURSELIST}">
 					<option value="${courseList.id}">${courseList.name}</option>
 				</c:forEach>
 			</select>
 		</div>
-		<div style="margin-top:1%">
+		<div style="margin-top: 1%">
 			Update Course Name:<input type="text" name="newcourseName">
 		</div>
-		<div style="margin-top:1%">
+		<div style="margin-top: 1%">
 			<button type="submit">Update</button>
 		</div>
 	</form>
 
-	<%
-		if (request.getAttribute("message") != null) {
-			out.print(request.getAttribute("message"));
-		}
-	%>
-	<a href="courseoperation.html">back</a>
+	<div>
+		<%
+			if (request.getAttribute("message") != null) {
+				out.print(request.getAttribute("message"));
+			}
+		%>
+	</div>
+	<div>
+		<a href="courseoperation.html">back</a>
+	</div>
 
 </body>
 </html>

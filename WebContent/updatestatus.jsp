@@ -34,22 +34,19 @@
 
 						});
 
-				$("#topic").change(function() {
-
-					console.log($("#topic").val());
+				$("#topic").change(function() {					
 					$.ajax({
 						type : "POST",
 						url : "UpdateStatusServlet",
 						data : {
 							topicname : $("#topic").val(),
-							courseId : $("#course").val(),
-							button : "status"
+							coursename : $("#course").val(),
+							button : "getoldstatus"
 						},
 						success : function(data) {
 
 							$('#status').val(data);
 
-							
 						},
 
 					});
@@ -64,7 +61,7 @@
 	<form method="post" action="UpdateStatusServlet">
 		<div>
 			Course List: <select name="coursename" id="course">
-				<option value="">Select</option>
+				<option value="Select">Select</option>
 				<c:forEach var="courseList" items="${COURSELIST}">
 					<option value="${courseList.id}">${courseList.name}</option>
 				</c:forEach>
@@ -76,29 +73,31 @@
 		</div>
 		<div style="margin-top: 1%">
 			Topic List: <select name="topicname" id="topic">
-				<option value="">Select</option>
+				<option value="Select">Select</option>
 			</select>
 		</div>
 		<div style="margin-top: 1%">
 			Status:<select name="statusname" id="status">
-				<option value="">Select</option>
+				<option value="Select">Select</option>
 				<c:forEach var="statusList" items="${STATUSLIST}">
 					<option value="${statusList.id}">${statusList.name}</option>
 				</c:forEach>
 			</select>
 		</div>
 		<div style="margin-top: 1%">
-			<button type="submit" value="update" name='button'>Update
+			<button type="submit" value="updatestatus" name='button'>Update
 				status</button>
 		</div>
 	</form>
 
-	<%
-		if (request.getAttribute("message")!=null) {
-			out.print(request.getAttribute("message"));
-		}
-	%>
+	<div>
+		<%
+			if (request.getAttribute("message") != null) {
+				out.print(request.getAttribute("message"));
+			}
+		%>
+	</div>
 
-	<a href="employeeoperation.html">Back</a>
+	<div><a href="HomeServlet">back</a></div>
 </body>
 </html>

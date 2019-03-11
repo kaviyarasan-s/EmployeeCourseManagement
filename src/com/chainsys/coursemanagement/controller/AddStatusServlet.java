@@ -1,7 +1,7 @@
 package com.chainsys.coursemanagement.controller;
 
 import java.io.IOException;
-import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 import javax.servlet.RequestDispatcher;
@@ -21,6 +21,7 @@ import com.chainsys.coursemanagement.model.Employee;
 import com.chainsys.coursemanagement.model.EmployeeTopic;
 import com.chainsys.coursemanagement.model.Status;
 import com.chainsys.coursemanagement.model.Topic;
+import com.chainsys.coursemanagement.validate.StatusValidation;
 
 /**
  * Servlet implementation class AddStatusServlet
@@ -47,28 +48,40 @@ public class AddStatusServlet extends HttpServlet {
 
 		CourseDAO courseDAO = new CourseDAO();
 		StatusDAO statusDAO = new StatusDAO();
+
+		ArrayList<Courses> courseList = null;
+		ArrayList<Status> statusList = null;
 		try {
-			ArrayList<Courses> courseList = courseDAO.selectAllCourse();
-			request.setAttribute("COURSELIST", courseList);
-			ArrayList<Status> statusList = statusDAO.selectAllStatus();
-			request.setAttribute("STATUSLIST", statusList);
-
-			if (request.getAttribute("message") != null)
-				request.setAttribute("message", request.getAttribute("message"));
-			else
-				request.setAttribute("message", null);
+			courseList = courseDAO.selectAllCourse();
+			if (courseList != null) {
+				request.setAttribute("COURSELIST", courseList);
+				statusList = statusDAO.selectAllStatus();
+				if (statusList != null) {
+					request.setAttribute("STATUSLIST", statusList);
+					if (request.getAttribute("message") != null)
+						request.setAttribute("message",
+								request.getAttribute("message"));
+					else
+						request.setAttribute("message", null);
+					RequestDispatcher requestDispatcher = request
+							.getRequestDispatcher("addstatus.jsp");
+					requestDispatcher.forward(request, response);
+				} else {
+					RequestDispatcher requestDispatcher = request
+							.getRequestDispatcher("pagenotfound.html");
+					requestDispatcher.forward(request, response);
+				}
+			} else {
+				RequestDispatcher requestDispatcher = request
+						.getRequestDispatcher("pagenotfound.html");
+				requestDispatcher.forward(request, response);
+			}
+		} catch (Exception e) {
 			RequestDispatcher requestDispatcher = request
-					.getRequestDispatcher("addstatus.jsp");
-
+					.getRequestDispatcher("pagenotfound.html");
 			requestDispatcher.forward(request, response);
-
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
+
 	}
 
 	/**
@@ -78,81 +91,91 @@ public class AddStatusServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
-		if (!request.getParameter("button").equals("status")) {
-			String topicName = request.getParameter("topicname");
-			int courseId = Integer.parseInt(request.getParameter("coursename"));
-			int statusId = Integer.parseInt(request.getParameter("statusname"));
-			EmployeeTopic employeeTopic = new EmployeeTopic();
+		String courseName = request.getParameter("coursename");
+		String statusName = request.getParameter("statusname");
+		String topicName = request.getParameter("topicname");
+		if (courseName.equals("Select")) {
+			request.setAttribute("message", "Select course");
+			doGet(request, response);
 
-			Topic topic = new Topic();
-			topic.setName(topicName);
-			Courses course = new Courses();
-			course.setId(courseId);
-			topic.setCourse(course);
-			TopicDAO topicDAO = new TopicDAO();
-
-			try {
-
-				Topic topicDetails = topicDAO.selectTopicsIdByName(topic);
-				topic.setId(topicDetails.getId());
-
-				Status status = new Status();
-				status.setId(statusId);
-				employeeTopic.setStatus(status);
-				employeeTopic.setTopic(topic);
-				Employee employee = new Employee();
-				HttpSession httpSession = request.getSession();
-				int empid = (int) httpSession.getAttribute("empid");
-				employee.setId(empid);
-				employeeTopic.setEmployee(employee);
-
-				EmployeeTopicStatusDAO employeeTopicStatusDAO = new EmployeeTopicStatusDAO();
-				int noOfTopicStatusAdded = employeeTopicStatusDAO
-						.addEmployeeTopicStatus(employeeTopic);
-				if (noOfTopicStatusAdded > 0)
-					request.setAttribute("message", "Status added.");
-				else
-					request.setAttribute("message", "Status not added.");
-
-				doGet(request, response);
-			} catch (ClassNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
 		} else {
+			if (topicName.equals("Select")) {
+				request.setAttribute("message", "Select topic");
+				doGet(request, response);
+			} else {
+				if (statusName.equals("Select")) {
+					request.setAttribute("message", "Select status");
+					doGet(request, response);
+				} else {
+					int courseId = Integer.parseInt(courseName);
+					Topic topic = new Topic();
+					topic.setName(topicName);
+					Courses course = new Courses();
+					course.setId(courseId);
+					topic.setCourse(course);
+					TopicDAO topicDAO = new TopicDAO();
+					Topic topicDetails = null;
+					try {
+						topicDetails = topicDAO.selectTopicsIdByName(topic);
+						if (request.getParameter("button").equals("addstatus")) {
+							int statusId = Integer.parseInt(statusName);
+							EmployeeTopic employeeTopic = new EmployeeTopic();
+							topic.setId(topicDetails.getId());
+							Status status = new Status();
+							status.setId(statusId);
+							employeeTopic.setStatus(status);
+							employeeTopic.setTopic(topic);
+							Employee employee = new Employee();
+							HttpSession httpSession = request.getSession();
+							int empid = (int) httpSession.getAttribute("empid");
+							employee.setId(empid);
+							employeeTopic.setEmployee(employee);
+							employeeTopic.setCreatedOn(LocalDateTime.now());
+							employeeTopic.setCreatedBy(empid);
+							
+							boolean statusValidation = StatusValidation
+									.addStatusValidation(employeeTopic);
+							if (statusValidation) {
+								EmployeeTopicStatusDAO employeeTopicStatusDAO = new EmployeeTopicStatusDAO();
+								boolean noOfTopicStatusAdded = employeeTopicStatusDAO
+										.addEmployeeTopicStatus(employeeTopic);
+								if (noOfTopicStatusAdded)
+									request.setAttribute("message",
+											"Status added.");
+								else
+									request.setAttribute("message",
+											"Status not added.");
 
-			String topicName = request.getParameter("topicname");
-			int courseId = Integer.parseInt(request.getParameter("courseId"));
-			Topic topic = new Topic();
-			topic.setName(topicName);
-			Courses courses = new Courses();
-			courses.setId(courseId);
-			topic.setCourse(courses);
+								doGet(request, response);
+							} else {
+								request.setAttribute("message",
+										"Unable to add Status");
 
-			TopicDAO topicDAO = new TopicDAO();
-			Topic topicDetails;
-			try {
-				topicDetails = topicDAO.selectTopicsIdByName(topic);
-				EmployeeTopicStatusDAO employeeTopicStatusDAO = new EmployeeTopicStatusDAO();
-				EmployeeTopic employeeTopic = employeeTopicStatusDAO
-						.selectStatusIdByTopicId(topicDetails);
-				if (employeeTopic != null) {
-					if (employeeTopic.getStatus().getId() > 0)
-						response.getWriter().write("1");
-				} else
-					response.getWriter().write("0");
+								doGet(request, response);
+							}
 
-			} catch (ClassNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+						} else if (request.getParameter("button").equals(
+								"checkstatusexist")) {
+
+							EmployeeTopicStatusDAO employeeTopicStatusDAO = new EmployeeTopicStatusDAO();
+							EmployeeTopic employeeTopic = employeeTopicStatusDAO
+									.selectStatusIdByTopicId(topicDetails);
+							if (employeeTopic != null) {
+								if (employeeTopic.getStatus().getId() > 0)
+									response.getWriter().write("1");
+								else
+									response.getWriter().write("0");
+							} else
+								response.getWriter().write("0");
+
+						}
+					} catch (Exception e) {
+						request.setAttribute("message", e.getMessage());
+						doGet(request, response);
+
+					}
+				}
 			}
-
 		}
 
 	}

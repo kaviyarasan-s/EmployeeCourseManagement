@@ -11,12 +11,12 @@
 <body>
 	<form method="post" action="ViewEmployeeByStatusServlet">
 		Course List: <select name="coursename" id="course">
-			<option value="">Select</option>
+			<option value="Select">Select</option>
 			<c:forEach var="courseList" items="${COURSELIST}">
 				<option value="${courseList.id}">${courseList.name}</option>
 			</c:forEach>
 		</select> Status: <select name="statusname" id="status">
-			<option value="">Select</option>
+			<option value="Select">Select</option>
 			<c:forEach var="statusList" items="${STATUSLIST}">
 				<option value="${statusList.id}">${statusList.name}</option>
 			</c:forEach>
@@ -43,6 +43,9 @@
 			</c:forEach>
 		</table>
 	</c:if>
-	<a href="adminoperation.html">back</a>
+	<c:if test="${!permission}">
+	<div>Status not found!</div>
+	</c:if>
+	<a href="HomeServlet">back</a>
 </body>
 </html>

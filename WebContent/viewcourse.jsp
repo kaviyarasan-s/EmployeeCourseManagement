@@ -9,29 +9,31 @@
 </head>
 <body>
 
+
 	Course List:
 	<table>
-		<tr>
-			<td>S.no</td>
-			<td>Name</td>
-		</tr>
-		<%
-			int i = 0;
-		%>
-		<c:forEach var="courseList" items="${COURSELIST}">
 			<tr>
-
-				<td>
-					<%
-						i = i + 1;
-							out.print(i);
-					%>
-				</td>
-				<td>${courseList.name}</td>
+				<td>S.no</td>
+				<td>Name</td>
 			</tr>
-		</c:forEach>
+			<%
+				int i = 0;
+			%>
+			<c:forEach var="courseList" items="${COURSELIST}">
+				<tr>
 
-	</table>
+					<td>
+						<%
+							i = i + 1;
+									out.print(i);
+						%>
+					</td>
+					<td>${courseList.name}</td>
+				</tr>
+			</c:forEach>
+
+		</table>
+	
 	<a href="courseoperation.html">back</a>
 </body>
 </html>
