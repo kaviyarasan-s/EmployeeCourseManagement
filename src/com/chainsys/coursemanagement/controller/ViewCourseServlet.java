@@ -13,33 +13,21 @@ import javax.servlet.http.HttpServletResponse;
 import com.chainsys.coursemanagement.dao.CourseDAO;
 import com.chainsys.coursemanagement.model.Courses;
 
-/**
- * Servlet implementation class ViewCourseServlet
- */
+
 @WebServlet("/ViewCourseServlet")
 public class ViewCourseServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-
 	/**
-	 * @see HttpServlet#HttpServlet()
-	 */
-	public ViewCourseServlet() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
-
-	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
-	 *      response)
+	 * This method is used to load drop down in viewcourse.jsp
+	 * parameters:request,response 
+	 * return to viewcourse.jsp
 	 */
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
-		CourseDAO courseDAO = new CourseDAO();
-
-		ArrayList<Courses> courseList = null;
+		CourseDAO courseDAO = new CourseDAO();	
 		try {
-			courseList = courseDAO.selectAllCourse();
-			if (courseList != null) {
+			ArrayList<Courses> courseList = courseDAO.selectAllCourse();
+			if (courseList != null&&!courseList.isEmpty()) {
 				request.setAttribute("COURSELIST", courseList);
 				RequestDispatcher requestDispatcher = request
 						.getRequestDispatcher("viewcourse.jsp");
@@ -49,22 +37,14 @@ public class ViewCourseServlet extends HttpServlet {
 						.getRequestDispatcher("pagenotfound.html");
 				requestDispatcher.forward(request, response);
 			}
-
 		} catch (Exception e) {
 			RequestDispatcher requestDispatcher = request
 					.getRequestDispatcher("pagenotfound.html");
 			requestDispatcher.forward(request, response);
 		}
-
-	}
-
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
-	 *      response)
-	 */
+	}	
 	protected void doPost(HttpServletRequest request,
-			HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
+			HttpServletResponse response) throws ServletException, IOException {	
 
 	}
 

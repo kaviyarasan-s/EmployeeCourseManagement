@@ -16,32 +16,20 @@ import com.chainsys.coursemanagement.dao.CourseDAO;
 import com.chainsys.coursemanagement.model.Courses;
 import com.chainsys.coursemanagement.validate.CourseValidation;
 
-/**
- * Servlet implementation class UpdateCourseServlet
- */
+
 @WebServlet("/UpdateCourseServlet")
 public class UpdateCourseServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-
 	/**
-	 * @see HttpServlet#HttpServlet()
-	 */
-	public UpdateCourseServlet() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
-
-	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
-	 *      response)
+	 * This method is used to load drop down in updatecourse.jsp 
+	 * parameters:request,response 
+	 * return to updatecourse.jsp
 	 */
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 		CourseDAO courseDAO = new CourseDAO();
-		ArrayList<Courses> courseList = null;
-
 		try {
-			courseList = courseDAO.selectAllCourse();
+			ArrayList<Courses> courseList = courseDAO.selectAllCourse();			
 			if (courseList != null && !courseList.isEmpty()) {
 				request.setAttribute("COURSELIST", courseList);
 				if (request.getAttribute("message") != null)
@@ -49,7 +37,6 @@ public class UpdateCourseServlet extends HttpServlet {
 							request.getAttribute("message"));
 				else
 					request.setAttribute("message", null);
-
 				RequestDispatcher requestDispatcher = request
 						.getRequestDispatcher("updatecourse.jsp");
 				requestDispatcher.forward(request, response);
@@ -61,25 +48,21 @@ public class UpdateCourseServlet extends HttpServlet {
 				requestDispatcher.forward(request, response);
 			}
 		} catch (Exception e) {
-
 			RequestDispatcher requestDispatcher = request
 					.getRequestDispatcher("pagenotfound.html");
 			requestDispatcher.forward(request, response);
 		}
-
 	}
-
 	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
-	 *      response)
+	 * This method is used to update course 
+	 * parameters:request,response 
+	 * return to updatecourse.jsp
 	 */
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
-
-		String oldCourseName = request.getParameter("oldcoursename");
-		int oldCourseId = 0;
+		String oldCourseName = request.getParameter("oldcoursename");		 
 		if (!oldCourseName.equals("Select")) {
-			oldCourseId = Integer.parseInt(oldCourseName);
+			int oldCourseId = Integer.parseInt(oldCourseName);
 			String newCourseName = request.getParameter("newcourseName");
 			Courses course = new Courses();
 			course.setId(oldCourseId);
@@ -90,13 +73,9 @@ public class UpdateCourseServlet extends HttpServlet {
 			boolean validationResult = CourseValidation
 					.updateCoursesValidation(course);
 			if (validationResult) {
-
-				CourseDAO courseDAO = new CourseDAO();
-
-				boolean updateResult = false;
+				CourseDAO courseDAO = new CourseDAO();				 
 				try {
-					updateResult = courseDAO.updateCourse(course);
-
+					boolean updateResult = courseDAO.updateCourse(course);
 					if (updateResult)
 						request.setAttribute("message", "updated successfully");
 					else
@@ -105,18 +84,14 @@ public class UpdateCourseServlet extends HttpServlet {
 				} catch (Exception e) {
 					request.setAttribute("message", e.getMessage());
 					doGet(request, response);
-
 				}
 			} else {
 				request.setAttribute("message", "Invalid inputs");
 				doGet(request, response);
 			}
-
 		} else {
 			request.setAttribute("message", "Select course");
 			doGet(request, response);
 		}
-
 	}
-
 }

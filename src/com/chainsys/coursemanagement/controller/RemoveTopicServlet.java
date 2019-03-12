@@ -18,33 +18,21 @@ import com.chainsys.coursemanagement.model.Courses;
 import com.chainsys.coursemanagement.model.Topic;
 import com.chainsys.coursemanagement.validate.TopicValidation;
 
-/**
- * Servlet implementation class RemoveTopicServlet
- */
+
 @WebServlet("/RemoveTopicServlet")
 public class RemoveTopicServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-
 	/**
-	 * @see HttpServlet#HttpServlet()
-	 */
-	public RemoveTopicServlet() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
-
-	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
-	 *      response)
+	 * This method is used to load drop down in removetopic.jsp 
+	 * parameters:request,response 
+	 * return to removetopic.jsp
 	 */
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
-
-		CourseDAO courseDAO = new CourseDAO();
-		ArrayList<Courses> courseList = null;
+		CourseDAO courseDAO = new CourseDAO();		 
 		try {
-			courseList = courseDAO.selectAllCourse();
-			if (courseList != null) {
+			ArrayList<Courses> courseList = courseDAO.selectAllCourse();
+			if (courseList != null && !courseList.isEmpty()) {
 				request.setAttribute("COURSELIST", courseList);
 				if (request.getAttribute("message") != null)
 					request.setAttribute("message",
@@ -65,10 +53,10 @@ public class RemoveTopicServlet extends HttpServlet {
 			requestDispatcher.forward(request, response);
 		}
 	}
-
 	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
-	 *      response)
+	 * This method is used to remove topic 
+	 * parameters:request,response 
+	 * return to removetopic.jsp
 	 */
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
@@ -82,53 +70,44 @@ public class RemoveTopicServlet extends HttpServlet {
 				request.setAttribute("message", "Select topic");
 				doGet(request, response);
 			} else {
-
 				int courseId = Integer.parseInt(courseName);
 				TopicDAO topicDAO = new TopicDAO();
 				Topic topic = new Topic();
-				topic.setName(topicName);				
+				topic.setName(topicName);
 				Courses courses = new Courses();
 				courses.setId(courseId);
 				topic.setCourse(courses);
 				topic.setModifiedOn(LocalDateTime.now());
-				HttpSession httpSession=request.getSession();
-				topic.setModifiedBy((int)httpSession.getAttribute("empid"));
-				Topic topicDetails;
+				HttpSession httpSession = request.getSession();
+				topic.setModifiedBy((int) httpSession.getAttribute("empid"));				
 				try {
-					topicDetails = topicDAO.selectTopicsIdByName(topic);
+					Topic topicDetails = topicDAO.selectTopicsIdByName(topic);
 					topic.setStatus(0);
 					topic.setId(topicDetails.getId());
 					boolean validationResult = TopicValidation
 							.removeTopicValidation(topic);
-					if (validationResult) {
-						boolean topicRemovedResult=false;
+					if (validationResult) {					 
 						try {
-							topicRemovedResult = topicDAO.removeTopics(topic);
+							boolean topicRemovedResult = topicDAO.removeTopics(topic);
 							if (topicRemovedResult)
 								request.setAttribute("message",
 										"Topics removed successfully.");
 							else
 								request.setAttribute("message",
 										"Topics not removed.");
-
 							doGet(request, response);
 						} catch (Exception e) {
 							request.setAttribute("message", e.getMessage());
-
 							doGet(request, response);
 						}
 					} else {
-						request.setAttribute("message",
-								"Unable to remove topics");
-
+						request.setAttribute("message", "Invalid inputs");
 						doGet(request, response);
 					}
 				} catch (Exception e) {
 					request.setAttribute("message", e.getMessage());
-
 					doGet(request, response);
 				}
-
 			}
 		}
 	}

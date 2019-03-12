@@ -23,39 +23,24 @@ import com.chainsys.coursemanagement.model.Status;
 import com.chainsys.coursemanagement.model.Topic;
 import com.chainsys.coursemanagement.validate.StatusValidation;
 
-/**
- * Servlet implementation class UpdateStatusServlet
- */
 @WebServlet("/UpdateStatusServlet")
 public class UpdateStatusServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-
 	/**
-	 * @see HttpServlet#HttpServlet()
-	 */
-	public UpdateStatusServlet() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
-
-	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
-	 *      response)
+	 * This method is used to load drop down in updatestatus.jsp
+	 * parameters:request,response 
+	 * return to updatestatus.jsp
 	 */
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
 		CourseDAO courseDAO = new CourseDAO();
 		StatusDAO statusDAO = new StatusDAO();
-
-		ArrayList<Courses> courseList = null;
-		ArrayList<Status> statusList = null;
 		try {
-			courseList = courseDAO.selectAllCourse();
-			if (courseList != null) {
+			ArrayList<Courses> courseList = courseDAO.selectAllCourse();
+			if (courseList != null && !courseList.isEmpty()) {
 				request.setAttribute("COURSELIST", courseList);
-				statusList = statusDAO.selectAllStatus();
-				if (statusList != null) {
+				ArrayList<Status> statusList = statusDAO.selectAllStatus();
+				if (statusList != null && !statusList.isEmpty()) {
 					request.setAttribute("STATUSLIST", statusList);
 					if (request.getAttribute("message") != null)
 						request.setAttribute("message",
@@ -75,26 +60,22 @@ public class UpdateStatusServlet extends HttpServlet {
 						.getRequestDispatcher("pagenotfound.html");
 				requestDispatcher.forward(request, response);
 			}
-
 		} catch (Exception e) {
 			request.setAttribute("message", e.getMessage());
 			RequestDispatcher requestDispatcher = request
 					.getRequestDispatcher("updatestatus.jsp");
 			requestDispatcher.forward(request, response);
 		}
-
 	}
-
 	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
-	 *      response)
+	 * This method is used to update status 
+	 * parameters:request,response 
+	 * return to updatestatus.jsp
 	 */
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
 		String courseName = request.getParameter("coursename");
 		String topicName = request.getParameter("topicname");
-		
 		if (courseName.equals("Select")) {
 			request.setAttribute("message", "Select course");
 			doGet(request, response);
@@ -103,10 +84,6 @@ public class UpdateStatusServlet extends HttpServlet {
 				request.setAttribute("message", "Select topics");
 				doGet(request, response);
 			} else {
-				// if (request.getParameter("statusname").equals("Select")) {
-				// request.setAttribute("message", "Select status");
-				// doGet(request, response);
-				// } else {
 				int courseId = Integer.parseInt(courseName);
 				Topic topic = new Topic();
 				topic.setName(topicName);
@@ -114,7 +91,6 @@ public class UpdateStatusServlet extends HttpServlet {
 				courses.setId(courseId);
 				topic.setCourse(courses);
 				if (request.getParameter("button").equals("getoldstatus")) {
-
 					TopicDAO topicDAO = new TopicDAO();
 					try {
 						Topic topicDetails = topicDAO
@@ -128,21 +104,14 @@ public class UpdateStatusServlet extends HttpServlet {
 										String.valueOf(employeeTopic
 												.getStatus().getId()));
 							} else {
-								RequestDispatcher requestDispatcher = request
-										.getRequestDispatcher("pagenotfound.html");
-								requestDispatcher.forward(request, response);
+								response.getWriter().write("");// error
 							}
 						} else {
-							RequestDispatcher requestDispatcher = request
-									.getRequestDispatcher("pagenotfound.html");
-							requestDispatcher.forward(request, response);
+							response.getWriter().write("");// error
 						}
 					} catch (Exception e) {
-						RequestDispatcher requestDispatcher = request
-								.getRequestDispatcher("pagenotfound.html");
-						requestDispatcher.forward(request, response);
+						response.getWriter().write("");// error
 					}
-
 				} else if (request.getParameter("button")
 						.equals("updatestatus")) {
 					if (request.getParameter("statusname").equals("Select")) {
@@ -184,14 +153,13 @@ public class UpdateStatusServlet extends HttpServlet {
 								doGet(request, response);
 							} else {
 								request.setAttribute("message",
-										"Enter valid input");
+										"Invalid inputs");
 								doGet(request, response);
 							}
 						} catch (Exception e) {
 							request.setAttribute("message", e.getMessage());
 							doGet(request, response);
 						}
-
 					}
 
 				}

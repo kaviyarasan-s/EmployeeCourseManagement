@@ -18,43 +18,29 @@ import com.chainsys.coursemanagement.model.EmployeeTopic;
 import com.chainsys.coursemanagement.model.Status;
 import com.chainsys.coursemanagement.model.Topic;
 
-/**
- * Servlet implementation class ViewEmployeeByStatusServlet
- */
 @WebServlet("/ViewEmployeeByStatusServlet")
 public class ViewEmployeeByStatusServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-
 	/**
-	 * @see HttpServlet#HttpServlet()
-	 */
-	public ViewEmployeeByStatusServlet() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
-
-	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
-	 *      response)
+	 * This method is used to load drop down in viewemployeebystatus.jsp
+	 * parameters:request,response 
+	 * return to viewemployeebystatus.jsp
 	 */
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 		CourseDAO courseDAO = new CourseDAO();
 		StatusDAO statusDAO = new StatusDAO();
-		ArrayList<Courses> courseList = null;
-		ArrayList<Status> statusList = null;
 		try {
-			courseList = courseDAO.selectAllCourse();
+			ArrayList<Courses> courseList = courseDAO.selectAllCourse();
 			if (courseList != null) {
 				request.setAttribute("COURSELIST", courseList);
-				statusList = statusDAO.selectAllStatus();
+				ArrayList<Status> statusList = statusDAO.selectAllStatus();
 				request.setAttribute("STATUSLIST", statusList);
 				if (statusList != null) {
 					if (request.getAttribute("searched") != null)
 						request.setAttribute("permission", true);
 					else
 						request.setAttribute("permission", false);
-
 					RequestDispatcher requestDispatcher = request
 							.getRequestDispatcher("viewemployeebystatus.jsp");
 					requestDispatcher.forward(request, response);
@@ -73,18 +59,16 @@ public class ViewEmployeeByStatusServlet extends HttpServlet {
 					.getRequestDispatcher("pagenotfound.html");
 			requestDispatcher.forward(request, response);
 		}
-
 	}
-
 	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
-	 *      response)
+	 * This method is used to view viewemployeebystatus
+	 * parameters:request,response 
+	 * return to viewemployeebystatus.jsp
 	 */
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 		String courseName = request.getParameter("coursename");
 		String statusName = request.getParameter("statusname");
-
 		if (!courseName.equals("Select")) {
 			int courseId = Integer.parseInt(courseName);
 			Topic topic = new Topic();
@@ -98,23 +82,21 @@ public class ViewEmployeeByStatusServlet extends HttpServlet {
 			employeeTopic.setTopic(topic);
 			employeeTopic.setStatus(status);
 			EmployeeTopicStatusDAO employeeTopicStatusDAO = new EmployeeTopicStatusDAO();
-
 			ArrayList<EmployeeTopic> employeeTopicStatus;
 			try {
 				employeeTopicStatus = employeeTopicStatusDAO
 						.selectEmployeeByStatus(employeeTopic);
-				if (employeeTopicStatus != null&&!employeeTopicStatus.isEmpty()) {
+				if (employeeTopicStatus != null
+						&& !employeeTopicStatus.isEmpty()) {
 					request.setAttribute("EMPLOYEESTATUSLIST",
 							employeeTopicStatus);
 					request.setAttribute("searched", true);
 					doGet(request, response);
 				} else {
-					
 					request.setAttribute("searched", null);
 					doGet(request, response);
 				}
 			} catch (Exception e) {
-				
 				RequestDispatcher requestDispatcher = request
 						.getRequestDispatcher("pagenotfound.html");
 				requestDispatcher.forward(request, response);
@@ -125,5 +107,4 @@ public class ViewEmployeeByStatusServlet extends HttpServlet {
 			requestDispatcher.forward(request, response);
 		}
 	}
-
 }

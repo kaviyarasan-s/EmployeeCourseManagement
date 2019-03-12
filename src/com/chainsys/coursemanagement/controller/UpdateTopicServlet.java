@@ -18,35 +18,21 @@ import com.chainsys.coursemanagement.model.Courses;
 import com.chainsys.coursemanagement.model.Topic;
 import com.chainsys.coursemanagement.validate.TopicValidation;
 
-/**
- * Servlet implementation class UpdateTopicServlet
- */
+
 @WebServlet("/UpdateTopicServlet")
 public class UpdateTopicServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-
 	/**
-	 * @see HttpServlet#HttpServlet()
-	 */
-	public UpdateTopicServlet() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
-
-	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
-	 *      response)
+	 * This method is used to load drop down in updatetopic.jsp
+	 * parameters:request,response 
+	 * return to updatetopic.jsp
 	 */
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-
-		CourseDAO courseDAO = new CourseDAO();
-
-		ArrayList<Courses> courseList = null;
+		CourseDAO courseDAO = new CourseDAO();		 
 		try {
-			courseList = courseDAO.selectAllCourse();
-			if (courseList != null) {
+			ArrayList<Courses> courseList = courseDAO.selectAllCourse();
+			if (courseList != null && !courseList.isEmpty()) {
 				request.setAttribute("COURSELIST", courseList);
 				if (request.getAttribute("message") != null)
 					request.setAttribute("message",
@@ -67,19 +53,16 @@ public class UpdateTopicServlet extends HttpServlet {
 					.getRequestDispatcher("pagenotfound.html");
 			requestDispatcher.forward(request, response);
 		}
-
 	}
-
 	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
-	 *      response)
+	 * This method is used to update topic
+	 * parameters:request,response 
+	 * return to updatetopic.jsp
 	 */
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 		TopicDAO topicDAO = new TopicDAO();
-
-		String courseName = request.getParameter("coursename");
-		int courseId = 0;
+		String courseName = request.getParameter("coursename");		
 		String topicName = request.getParameter("topicname");
 		if (courseName.equals("Select")) {
 			request.setAttribute("message", "Select course");
@@ -89,7 +72,7 @@ public class UpdateTopicServlet extends HttpServlet {
 				request.setAttribute("message", "Select Topic");
 				doGet(request, response);
 			} else {
-				courseId = Integer.parseInt(courseName);
+				int courseId  = Integer.parseInt(courseName);
 				Topic topic = new Topic();
 				Courses courses = new Courses();
 				courses.setId(courseId);
@@ -97,48 +80,38 @@ public class UpdateTopicServlet extends HttpServlet {
 				topic.setCourse(courses);
 				topic.setModifiedOn(LocalDateTime.now());
 				HttpSession httpSession=request.getSession();
-				topic.setModifiedBy((int)httpSession.getAttribute("empid"));
-				Topic topicDetails;
+				topic.setModifiedBy((int)httpSession.getAttribute("empid"));				
 				try {
-					topicDetails = topicDAO.selectTopicsIdByName(topic);
-
+					Topic topicDetails= topicDAO.selectTopicsIdByName(topic);
 					String newTopicName = request.getParameter("newtopicname");
 					topic.setId(topicDetails.getId());
 					topic.setName(newTopicName);
 					boolean validationResult = TopicValidation
 							.updateTopicValidation(topic);
-					if (validationResult) {
-						boolean topicUpdatedResult;
+					if (validationResult) {						
 						try {
-							topicUpdatedResult = topicDAO.updateTopics(topic);
-
+							boolean topicUpdatedResult = topicDAO.updateTopics(topic);
 							if (topicUpdatedResult)
 								request.setAttribute("message",
 										"Topic updated successfully");
 							else
 								request.setAttribute("message",
 										"Topic not updated");
-
 							doGet(request, response);
 						} catch (Exception e) {
 							request.setAttribute("message", e.getMessage());
-
 							doGet(request, response);
 						}
 					} else {
 						request.setAttribute("message",
-								"Enter valid inputs");
-
+								"Invalid inputs");
 						doGet(request, response);
 					}
 				} catch (Exception e1) {
 					request.setAttribute("message", e1.getMessage());
-
 					doGet(request, response);
 				}
-
 			}
 		}
-
 	}
 }

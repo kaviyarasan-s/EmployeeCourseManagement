@@ -1,5 +1,4 @@
 package com.chainsys.coursemanagement.model;
-
 public class Department {
 private int id;
 private String name;
@@ -14,5 +13,9 @@ public String getName() {
 }
 public void setName(String name) {
 	this.name = name;
+}
+@Override
+public String toString() {
+	return "Department [id=" + id + ", name=" + name + "]";
 }
 }

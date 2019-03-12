@@ -16,37 +16,23 @@ import com.chainsys.coursemanagement.model.Employee;
 import com.chainsys.coursemanagement.model.Manager;
 import com.chainsys.coursemanagement.model.Project;
 
-/**
- * Servlet implementation class HomeServlet
- */
 @WebServlet("/HomeServlet")
 public class HomeServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-
 	/**
-	 * @see HttpServlet#HttpServlet()
-	 */
-	public HomeServlet() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
-
-	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
-	 *      response)
+	 * This method is used to load user profiles 
+	 * parameters:request,response
 	 */
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-
 		Employee employee = new Employee();
 		HttpSession httpSession = request.getSession();
 		employee.setId((int) httpSession.getAttribute("empid"));
 		employee.setStatus(1);
 		EmployeeDAO employeeDAO = new EmployeeDAO();
-		Employee employeeDetails;
 		try {
-			employeeDetails = employeeDAO.selectEmployeeDetailsById(employee);
+			Employee employeeDetails = employeeDAO
+					.selectEmployeeDetailsById(employee);
 			if (employeeDetails != null) {
 				if (employeeDetails.getIsAdmin() == 1) {
 					request.setAttribute("ADMINPROFILE", employeeDetails);
@@ -59,21 +45,17 @@ public class HomeServlet extends HttpServlet {
 						manager.setId(employeeDetails.getManager().getId());
 						Manager managerDetails = employeeDAO
 								.selectManagerName(manager);
-
 						employeeDetails.setManager(managerDetails);
-
 						request.setAttribute("EMPLOYEEPROFILE", employeeDetails);
 						RequestDispatcher requestDispatcher = request
 								.getRequestDispatcher("employee.jsp");
 						requestDispatcher.forward(request, response);
 					} else if (employeeDetails.getIsManager() == 1) {
-
 						ProjectDAO projectDAO = new ProjectDAO();
 						Manager manager = new Manager();
 						manager.setId(employeeDetails.getId());
 						Project projectDetails = projectDAO
 								.selectProject(manager);
-
 						request.setAttribute("MANAGERPROFILE", employeeDetails);
 						request.setAttribute("PROJECTDETAILS", projectDetails);
 						RequestDispatcher requestDispatcher = request
@@ -81,9 +63,7 @@ public class HomeServlet extends HttpServlet {
 						requestDispatcher.forward(request, response);
 					}
 				}
-			}
-			else
-			{
+			} else {
 				RequestDispatcher requestDispatcher = request
 						.getRequestDispatcher("pagenotfound.html");
 				requestDispatcher.forward(request, response);
@@ -93,16 +73,9 @@ public class HomeServlet extends HttpServlet {
 					.getRequestDispatcher("pagenotfound.html");
 			requestDispatcher.forward(request, response);
 		}
-
 	}
-
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
-	 *      response)
-	 */
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
 	}
 
 }

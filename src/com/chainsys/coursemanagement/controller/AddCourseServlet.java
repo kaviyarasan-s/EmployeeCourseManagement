@@ -15,35 +15,16 @@ import com.chainsys.coursemanagement.dao.CourseDAO;
 import com.chainsys.coursemanagement.model.Courses;
 import com.chainsys.coursemanagement.validate.CourseValidation;
 
-/**
- * Servlet implementation class AddCourseServlet
- */
 @WebServlet("/AddCourseServlet")
 public class AddCourseServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
-	/**
-	 * @see HttpServlet#HttpServlet()
-	 */
-	public AddCourseServlet() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
-
-	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
-	 *      response)
-	 */
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
 	}
-
 	/**
-	 * @throws IOException
-	 * @throws ServletException
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
-	 *      response)
+	 * This method is used to insert course parameters:request,response return:
+	 * redirect to addcourse.jsp
 	 */
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
@@ -52,22 +33,21 @@ public class AddCourseServlet extends HttpServlet {
 		course.setName(courseName);
 		course.setStatus(1);
 		course.setCreatedOn(LocalDateTime.now());
-		HttpSession httpSession=request.getSession();
-		course.setCreatedBy((int)httpSession.getAttribute("empid"));
-		
+		HttpSession httpSession = request.getSession();
+		if (request.getSession() != null) {
+			course.setCreatedBy((int) httpSession.getAttribute("empid"));
+		}
 		boolean validationResult = CourseValidation
 				.addCoursesValidation(course);
 		if (!validationResult) {
-			request.setAttribute("message", "coursename is empty");
+			request.setAttribute("message", "Invalid inputs");
 			RequestDispatcher requestDispatcher = request
 					.getRequestDispatcher("addcourse.jsp");
 			requestDispatcher.forward(request, response);
 		} else {
 			CourseDAO courseDAO = new CourseDAO();
-
-			boolean addCourseResult = false;
 			try {
-				addCourseResult = courseDAO.addCourse(course);
+				boolean addCourseResult = courseDAO.addCourse(course);
 				if (addCourseResult) {
 					request.setAttribute("message",
 							"Course added successfully.");
@@ -83,9 +63,6 @@ public class AddCourseServlet extends HttpServlet {
 						.getRequestDispatcher("addcourse.jsp");
 				requestDispatcher.forward(request, response);
 			}
-
 		}
-
 	}
-
 }

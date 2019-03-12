@@ -18,39 +18,28 @@ import com.chainsys.coursemanagement.model.Courses;
 import com.chainsys.coursemanagement.model.Topic;
 import com.chainsys.coursemanagement.validate.TopicValidation;
 
-/**
- * Servlet implementation class AddTopicServlet
- */
+
 @WebServlet("/AddTopicServlet")
 public class AddTopicServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
 	/**
-	 * @see HttpServlet#HttpServlet()
-	 */
-	public AddTopicServlet() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
-
-	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
-	 *      response)
+	 * This method is used to load drop down in addtopic.jsp
+	 * parameters:request,response 
+	 * return: redirect to addtopic.jsp
 	 */
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
-		CourseDAO courseDAO = new CourseDAO();
-		ArrayList<Courses> courseList = null;
+		CourseDAO courseDAO = new CourseDAO();		 
 		try {
-			courseList = courseDAO.selectAllCourse();
-			if (courseList != null) {
+			ArrayList<Courses> courseList = courseDAO.selectAllCourse();
+			if (courseList != null && !courseList.isEmpty()) {
 				request.setAttribute("COURSELIST", courseList);
 				if (request.getAttribute("message") != null)
 					request.setAttribute("message",
 							request.getAttribute("message"));
 				else
 					request.setAttribute("message", null);
-
 				RequestDispatcher requestDispatcher = request
 						.getRequestDispatcher("addtopic.jsp");
 				requestDispatcher.forward(request, response);
@@ -65,17 +54,16 @@ public class AddTopicServlet extends HttpServlet {
 			requestDispatcher.forward(request, response);
 		}
 	}
-
 	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
-	 *      response)
+	 * This method is used to add topics
+	 * parameters:request,response 
+	 * return: redirect to addtopic.jsp
 	 */
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
-		String courseName = request.getParameter("coursename");
-		int courseId = 0;
+		String courseName = request.getParameter("coursename");	
 		if (!courseName.equals("Select")) {
-			courseId = Integer.parseInt(courseName);
+			int courseId = Integer.parseInt(courseName);
 			String topicName = request.getParameter("topicname");
 			Topic topic = new Topic();
 			Courses courses = new Courses();
@@ -84,15 +72,14 @@ public class AddTopicServlet extends HttpServlet {
 			topic.setName(topicName);
 			topic.setStatus(1);
 			topic.setCreatedOn(LocalDateTime.now());
-			HttpSession httpSession=request.getSession();
-			topic.setCreatedBy((int)httpSession.getAttribute("empid"));
+			HttpSession httpSession = request.getSession();
+			topic.setCreatedBy((int) httpSession.getAttribute("empid"));
 			boolean validationResult = TopicValidation
 					.addTopicValidation(topic);
 			if (validationResult) {
-				TopicDAO topicDAO = new TopicDAO();
-				boolean topicAddedResult = false;
+				TopicDAO topicDAO = new TopicDAO();				 
 				try {
-					topicAddedResult = topicDAO.addTopics(topic);
+					boolean topicAddedResult = topicDAO.addTopics(topic);
 					if (topicAddedResult)
 						request.setAttribute("message", "Topic Added");
 					else
@@ -103,14 +90,12 @@ public class AddTopicServlet extends HttpServlet {
 					doGet(request, response);
 				}
 			} else {
-				request.setAttribute("message", "Unable to addtopics");
+				request.setAttribute("message", "Invalid inputs");
 				doGet(request, response);
 			}
 		} else {
 			request.setAttribute("message", "Select course");
 			doGet(request, response);
 		}
-
 	}
-
 }

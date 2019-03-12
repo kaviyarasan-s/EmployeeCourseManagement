@@ -9,7 +9,7 @@
 </head>
 <body>
 
-
+	<c:if test="${COURSELIST!=null}">
 	Course List:
 	<table>
 			<tr>
@@ -33,7 +33,10 @@
 			</c:forEach>
 
 		</table>
-	
-	<a href="courseoperation.html">back</a>
+	</c:if>
+	<div>
+		<a href="courseoperation.html">back</a>
+	</div>
+
 </body>
 </html>

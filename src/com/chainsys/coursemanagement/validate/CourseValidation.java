@@ -7,15 +7,18 @@ public class CourseValidation {
 	public static boolean addCoursesValidation(Courses courses) {
 		boolean validationResult = false;
 		if (!courses.getName().equals(null) && !courses.getName().isEmpty()) {
-			validationResult = true;
+			if (courses.getName().matches("[a-zA-Z]+"))
+				validationResult = true;
 		}
 		return validationResult;
 	}
-
 	public static boolean updateCoursesValidation(Courses courses) {
 		boolean validationResult = true;
 		if (courses.getId() > 0) {
-			if (courses.getName().equals(null) || courses.getName().isEmpty()) {
+			if (!courses.getName().equals(null) && !courses.getName().isEmpty()) {
+				if (courses.getName().matches("[a-zA-Z]+"))
+					validationResult = true;
+			} else {
 				validationResult = false;
 			}
 		} else {
@@ -24,7 +27,6 @@ public class CourseValidation {
 
 		return validationResult;
 	}
-
 	public static boolean removeCoursesValidation(Courses courses) {
 		boolean validationResult = true;
 		if (courses.getId() < 0) {
@@ -34,5 +36,4 @@ public class CourseValidation {
 
 		return validationResult;
 	}
-
 }

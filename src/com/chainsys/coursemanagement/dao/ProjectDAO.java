@@ -11,7 +11,12 @@ import com.chainsys.coursemanagement.model.Manager;
 import com.chainsys.coursemanagement.model.Project;
 
 public class ProjectDAO {
-
+	/**
+	 * This method is used to assign project to managers
+	 * @param project
+	 * @return boolean true or false
+	 * @throws Exception
+	 */
 	public boolean addProject(Project project) throws Exception {
 		Connection connection = null;
 		int addProjectResult = 0;
@@ -19,7 +24,6 @@ public class ProjectDAO {
 		boolean success = false;
 		try {
 			connection = ConnectionUtil.getConnection();
-
 			String query = "INSERT INTO projects(id,name,department_id,manager_id,createdon,createdby) VALUES(project_id_seq.nextval,?,?,?,?,?)";
 			preparedStatement = connection.prepareStatement(query);
 			preparedStatement.setString(1, project.getName());
@@ -27,7 +31,6 @@ public class ProjectDAO {
 			preparedStatement.setInt(3, project.getManager().getId());
 			preparedStatement.setTimestamp(4,Timestamp.valueOf(project.getCreatedOn()));
 			preparedStatement.setInt(5, project.getCreatedBy());
-
 			addProjectResult = preparedStatement.executeUpdate();
 			if (addProjectResult > 0) {
 				success = true;
@@ -37,11 +40,14 @@ public class ProjectDAO {
 		} finally {
 			ConnectionUtil.closeConnection(connection, preparedStatement, null);
 		}
-
 		return success;
-
 	}
-
+	/**
+	 * This method is used to select projects
+	 * @param manager
+	 * @return project object
+	 * @throws Exception
+	 */
 	public Project selectProject(Manager manager) throws Exception {
 		Connection connection = null;
 		PreparedStatement preparedStatement = null;
@@ -74,5 +80,4 @@ public class ProjectDAO {
 		}
 		return project;
 	}
-
 }

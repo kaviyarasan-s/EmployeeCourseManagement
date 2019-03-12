@@ -9,25 +9,25 @@
 </head>
 <body>
 	<form method="post" action="RegistrationServlet">
-		Firstname:<input type="text" name="firstname"> <br> <br>
-		Lastname:<input type="text" name="lastname"> <br> <br>
-		Phonenumber:<input type="text" name="phonenumber"> <br> <br>
-		Email:<input type="text" name="email"> <br> <br>
-		Password:<input type="text" name="password"> <br> <br>
-		Department:<select name="department">
+		Firstname:<input type="text" name="firstname" required> <br> <br>
+		Lastname:<input type="text" name="lastname" required> <br> <br>
+		Phonenumber:<input type="text" name="phonenumber" required maxlength=10> <br> <br>
+		Email:<input type="text" name="email" required> <br> <br>
+		Password:<input type="text" name="password" required maxlength=8> <br> <br>
+		Department:<select name="department" required>
 			<br>
 			<br>
 			<option value="Select">Select</option>
 			<c:forEach var="departmentlist" items="${DEPARTMENTLIST}">
 				<option value="${departmentlist.id}">${departmentlist.name}</option>
 			</c:forEach>
-		</select> <br> <br> Job: <select name="job">
+		</select> <br> <br> Job: <select name="job" required>
 			<option value="Select">Select</option>
 			<c:forEach var="joblist" items="${JOBLIST}">
 				<option value="${joblist.id}">${joblist.name}</option>
 			</c:forEach>
-		</select> <br> <br> Select Manager: <select name="managername">
-			<option value="Select">Select</option>
+		</select> <br> <br> Select Manager: <select name="managername" required>
+			<option value="Select" >Select</option>
 			<c:forEach var="employeeList" items="${MANAGERLIST}">
 				<option value="${employeeList.id}">${employeeList.firstName}${employeeList.lastName}</option>
 			</c:forEach>

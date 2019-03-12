@@ -9,7 +9,11 @@ import com.chainsys.coursemanagement.connectionutil.ConnectionUtil;
 import com.chainsys.coursemanagement.model.Department;
 
 public class DepartmentDAO {
-
+/**
+ * This method is used to select departments
+ * @return list of departments
+ * @throws Exception
+ */
 	public ArrayList<Department> selectAllDepartment()
  throws Exception {
 		Connection connection = null;		
@@ -20,8 +24,7 @@ public class DepartmentDAO {
 			connection = ConnectionUtil.getConnection();
 			String query = "SELECT id,name FROM employee_department";
 			preparedStatement = connection.prepareStatement(query);
-			resultSet = preparedStatement.executeQuery();
-			
+			resultSet = preparedStatement.executeQuery();			
 			if (resultSet != null) {
 				departmentList = new ArrayList<Department>();
 				while (resultSet.next()) {
@@ -37,7 +40,6 @@ public class DepartmentDAO {
 			ConnectionUtil.closeConnection(connection, preparedStatement,
 					resultSet);
 		}
-
 		return departmentList;
 	}
 }

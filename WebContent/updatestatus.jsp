@@ -6,8 +6,8 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title>Update status</title>
-<script
-	src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="script\jquery.min.js"></script>
+
 
 <script>
 	$(document).ready(
@@ -15,26 +15,32 @@
 
 				$("#course").change(
 						function() {
-
+							$('#topic').empty();
 							$.post('ViewTopicServlet', {
 								courseId : $("#course").val()
-							},
-									function(response) {
-
-										var list = response.split(',');
-
-										for ( var item in list) {
-											$('#topic').append(
-													"<option value="+list[item]+">"
-															+ list[item]
-															+ "</option>");
-										}
-
-									});
+							}, function(response) {
+								if (response != null && response != '') {
+									var list = response.split(',');
+									$('#topic').append(
+											"<option value='Select'>"
+													+ "Select" + "</option>");
+									for ( var item in list) {
+										$('#topic').append(
+												"<option value="+list[item]+">"
+														+ list[item]
+														+ "</option>");
+									}
+								} else {
+									$('#topic').append(
+											"<option value='Select'>"
+													+ "Topics not found"
+													+ "</option>");
+								}
+							});
 
 						});
 
-				$("#topic").change(function() {					
+				$("#topic").change(function() {
 					$.ajax({
 						type : "POST",
 						url : "UpdateStatusServlet",
@@ -44,8 +50,11 @@
 							button : "getoldstatus"
 						},
 						success : function(data) {
-
-							$('#status').val(data);
+							if (data != '') {
+								$('#status').val(data);
+							} else {
+								$('#statusmessage').val("Unable to update.");
+							}
 
 						},
 
@@ -97,7 +106,10 @@
 			}
 		%>
 	</div>
+	<div id="statusmessage"></div>
 
-	<div><a href="HomeServlet">back</a></div>
+	<div>
+		<a href="HomeServlet">back</a>
+	</div>
 </body>
 </html>

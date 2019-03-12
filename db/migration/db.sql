@@ -22,7 +22,7 @@ constraint job_fk foreign key(job_id) references job(id)
 );--over
 
 
-alter table employee modify modifiedby default null;
+
 insert into employee(id,firstname,lastname,phonenumber,email,password,department_id,job_id,status,isadmin,ismanager) 
 values(employee_id_seq.nextval,'Kaviyarasan','S','9688272004','kavi@gmail.com','123',1,2,1,1,0);
 
@@ -54,10 +54,10 @@ create sequence job_id_seq start with 1 increment by 1;--over
 insert into job values (job_id_seq.nextval,'Manager');
 insert into job values (job_id_seq.nextval,'IT Admin');
 
-select * from job;
+
 
 create table courses(id number primary key,
-name varchar2(100) not null,
+name varchar2(100) not null unique,
 status number check(status=0 or status=1) not null,
 createdon timestamp,
 createdby number,
@@ -65,10 +65,7 @@ modifiedon timestamp default null,
 modifiedby number default null);--over
 select * from courses;
 
---update courses set status=1 where id=2;
-  select * from topics;
---  update topics set status=1;
-commit;
+
 create sequence courses_id_seq start with 1 increment by 1;--over
 
 create table topics(
@@ -99,7 +96,7 @@ constraint employeedepartment_fk foreign key(department_id) references employee_
 );--over
 
 
-select * from projects;
+
 create sequence project_id_seq start with 1 increment by 1;--over
 
 create table status(
@@ -123,10 +120,6 @@ constraint topic_fk foreign key(topics_id) references topics(id),
 constraint status_fk foreign key(status_id) references status(id)
 );--over
 
-
-
-
-select * from employee_topic;
 
 create sequence employee_topic_id_seq start with 1 increment by 1;--over
 ---Employee course management--------

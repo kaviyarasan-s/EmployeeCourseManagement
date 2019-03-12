@@ -17,32 +17,20 @@ import com.chainsys.coursemanagement.model.Employee;
 import com.chainsys.coursemanagement.model.EmployeeTopic;
 import com.chainsys.coursemanagement.model.Topic;
 
-/**
- * Servlet implementation class ViewEmployeeStatusServlet
- */
+
 @WebServlet("/ViewEmployeeStatusServlet")
 public class ViewEmployeeStatusServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-
 	/**
-	 * @see HttpServlet#HttpServlet()
-	 */
-	public ViewEmployeeStatusServlet() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
-
-	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
-	 *      response)
+	 * This method is used to load drop down in viewemployeestatus.jsp
+	 * parameters:request,response 
+	 * return to viewemployeestatus.jsp
 	 */
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
-
-		CourseDAO courseDAO = new CourseDAO();
-		ArrayList<Courses> courseList = null;
+		CourseDAO courseDAO = new CourseDAO();		
 		try {
-			courseList = courseDAO.selectAllCourse();
+			ArrayList<Courses> courseList = courseDAO.selectAllCourse();
 			request.setAttribute("COURSELIST", courseList);
 			RequestDispatcher requestDispatcher = request
 					.getRequestDispatcher("viewemployeestatus.jsp");
@@ -52,16 +40,14 @@ public class ViewEmployeeStatusServlet extends HttpServlet {
 					.getRequestDispatcher("pagenotfound.html");
 			requestDispatcher.forward(request, response);
 		}
-
 	}
-
 	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
-	 *      response)
+	 * This method is used to view viewemployeestatus
+	 * parameters:request,response 
+	 * return to viewemployeestatus.jsp
 	 */
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
-
 		String courseName = request.getParameter("courseId");
 		if (courseName.equals("Select")) {
 			response.getWriter().write("");
@@ -79,18 +65,13 @@ public class ViewEmployeeStatusServlet extends HttpServlet {
 				employee.setId(employeeId);
 				employeeTopic.setEmployee(employee);
 				employeeTopic.setTopic(topic);
-
-				EmployeeTopicStatusDAO employeeTopicStatusDAO = new EmployeeTopicStatusDAO();
-
-				ArrayList<EmployeeTopic> employeeTopicList = null;
+				EmployeeTopicStatusDAO employeeTopicStatusDAO = new EmployeeTopicStatusDAO();				 
 				try {
-					employeeTopicList = employeeTopicStatusDAO
+					ArrayList<EmployeeTopic> employeeTopicList = employeeTopicStatusDAO
 							.selectTopicsStatusList(employeeTopic);
 					String topicStatusList = null;
 					if (employeeTopicList != null&& !employeeTopicList.isEmpty()) {
-
 						for (EmployeeTopic employeeTopicStatus : employeeTopicList) {
-
 							topicStatusList = topicStatusList + ","
 									+ employeeTopicStatus.getTopic().getName()
 									+ ","
@@ -100,7 +81,6 @@ public class ViewEmployeeStatusServlet extends HttpServlet {
 					} else {
 						response.getWriter().write("");
 					}
-
 				} catch (Exception e) {
 					response.getWriter().write("");
 				}

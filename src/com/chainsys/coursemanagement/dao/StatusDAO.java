@@ -9,7 +9,11 @@ import com.chainsys.coursemanagement.connectionutil.ConnectionUtil;
 import com.chainsys.coursemanagement.model.Status;
 
 public class StatusDAO {
-
+	/**
+	 * This method is used to select all status
+	 * @return list of status
+	 * @throws Exception
+	 */
 	public ArrayList<Status> selectAllStatus() throws Exception {
 		Connection connection = null;
 		PreparedStatement preparedStatement = null;

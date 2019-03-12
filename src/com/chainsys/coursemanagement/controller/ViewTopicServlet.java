@@ -15,33 +15,21 @@ import com.chainsys.coursemanagement.dao.TopicDAO;
 import com.chainsys.coursemanagement.model.Courses;
 import com.chainsys.coursemanagement.model.Topic;
 
-/**
- * Servlet implementation class ViewTopicServlet
- */
+
 @WebServlet("/ViewTopicServlet")
 public class ViewTopicServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-
 	/**
-	 * @see HttpServlet#HttpServlet()
+	 * This method is used to load drop down in viewtopic.jsp
+	 * parameters:request,response 
+	 * return to viewtopic.jsp
 	 */
-	public ViewTopicServlet() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
-
-	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
-	 *      response)
-	 */
-
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
-		CourseDAO courseDAO = new CourseDAO();
-		ArrayList<Courses> courseList = null;
+		CourseDAO courseDAO = new CourseDAO();		 
 		try {
-			courseList = courseDAO.selectAllCourse();
-			if (courseList != null) {
+			ArrayList<Courses> courseList = courseDAO.selectAllCourse();
+			if (courseList != null && !courseList.isEmpty()) {
 				request.setAttribute("COURSELIST", courseList);
 				RequestDispatcher requestDispatcher = request
 						.getRequestDispatcher("viewtopic.jsp");
@@ -56,35 +44,38 @@ public class ViewTopicServlet extends HttpServlet {
 					.getRequestDispatcher("pagenotfound.html");
 			requestDispatcher.forward(request, response);
 		}
-
 	}
-
 	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
-	 *      response)
+	 * This method is used to view topic
+	 * parameters:request,response 
+	 * return to viewtopic.jsp
 	 */
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
-
-		int courseId = Integer.parseInt(request.getParameter("courseId"));
-		Courses course = new Courses();
-		course.setId(courseId);
-		course.setStatus(1);
-		TopicDAO topicDAO = new TopicDAO();
-		ArrayList<Topic> topicList = null;
-		try {
-			topicList = topicDAO.selectAllTopicsByCourse(course);
-			
-			if (topicList != null) {
-				String topicListString = bindTopicList(topicList);
-				response.getWriter().write(topicListString);
+		String courseName=request.getParameter("courseId");
+		if (!courseName.equals("Select")) {
+			int courseId = Integer.parseInt(courseName);
+			Courses course = new Courses();
+			course.setId(courseId);
+			course.setStatus(1);
+			TopicDAO topicDAO = new TopicDAO();			 
+			try {
+				ArrayList<Topic> topicList = topicDAO.selectAllTopicsByCourse(course);
+				if (topicList != null && !topicList.isEmpty()) {
+					String topicListString = bindTopicList(topicList);
+					response.getWriter().write(topicListString);
+				} else {
+					response.getWriter().write("");
+				}
+			} catch (Exception e) {
+				response.getWriter().write("");
 			}
-		} catch (Exception e) {
-			response.getWriter().write("Unable to find topics");
 		}
-
+		else
+		{
+			response.getWriter().write("");
+		}
 	}
-
 	public String bindTopicList(ArrayList<Topic> topicsList) {
 		String topic = "";
 		int arraySize = topicsList.size();
@@ -95,5 +86,4 @@ public class ViewTopicServlet extends HttpServlet {
 		}
 		return topic;
 	}
-
 }

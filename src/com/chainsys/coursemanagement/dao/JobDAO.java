@@ -9,7 +9,11 @@ import com.chainsys.coursemanagement.connectionutil.ConnectionUtil;
 import com.chainsys.coursemanagement.model.Job;
 
 public class JobDAO {
-
+	/**
+	 * This method is used to select jobs list
+	 * @return list of job
+	 * @throws Exception
+	 */
 	public ArrayList<Job> selectAllJob() throws Exception {
 		Connection connection = null;
 		PreparedStatement preparedStatement = null;
@@ -20,7 +24,6 @@ public class JobDAO {
 			String query = "SELECT id,name FROM job";
 			preparedStatement = connection.prepareStatement(query);
 			resultSet = preparedStatement.executeQuery();
-
 			if (resultSet != null) {
 				jobList = new ArrayList<Job>();
 				while (resultSet.next()) {
@@ -36,8 +39,6 @@ public class JobDAO {
 			ConnectionUtil.closeConnection(connection, preparedStatement,
 					resultSet);
 		}
-
 		return jobList;
 	}
-
 }

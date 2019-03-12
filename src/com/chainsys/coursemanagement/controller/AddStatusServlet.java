@@ -23,40 +23,25 @@ import com.chainsys.coursemanagement.model.Status;
 import com.chainsys.coursemanagement.model.Topic;
 import com.chainsys.coursemanagement.validate.StatusValidation;
 
-/**
- * Servlet implementation class AddStatusServlet
- */
 @WebServlet("/AddStatusServlet")
 public class AddStatusServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
 	/**
-	 * @see HttpServlet#HttpServlet()
-	 */
-	public AddStatusServlet() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
-
-	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
-	 *      response)
+	 * This method is used to load drop down in addstatus.jsp
+	 * parameters:request,response 
+	 * return: redirect to addstatus.jsp
 	 */
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-
 		CourseDAO courseDAO = new CourseDAO();
 		StatusDAO statusDAO = new StatusDAO();
-
-		ArrayList<Courses> courseList = null;
-		ArrayList<Status> statusList = null;
 		try {
-			courseList = courseDAO.selectAllCourse();
-			if (courseList != null) {
+			ArrayList<Courses> courseList = courseDAO.selectAllCourse();
+			if (courseList != null && !courseList.isEmpty()) {
 				request.setAttribute("COURSELIST", courseList);
-				statusList = statusDAO.selectAllStatus();
-				if (statusList != null) {
+				ArrayList<Status> statusList = statusDAO.selectAllStatus();
+				if (statusList != null && !statusList.isEmpty()) {
 					request.setAttribute("STATUSLIST", statusList);
 					if (request.getAttribute("message") != null)
 						request.setAttribute("message",
@@ -85,39 +70,37 @@ public class AddStatusServlet extends HttpServlet {
 	}
 
 	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
-	 *      response)
+	 * This method is used to add status 
+	 * parameters:request,response return:
+	 * redirect to addstatus.jsp
 	 */
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
 		String courseName = request.getParameter("coursename");
 		String statusName = request.getParameter("statusname");
 		String topicName = request.getParameter("topicname");
 		if (courseName.equals("Select")) {
 			request.setAttribute("message", "Select course");
 			doGet(request, response);
-
 		} else {
 			if (topicName.equals("Select")) {
 				request.setAttribute("message", "Select topic");
 				doGet(request, response);
 			} else {
-				if (statusName.equals("Select")) {
-					request.setAttribute("message", "Select status");
-					doGet(request, response);
-				} else {
-					int courseId = Integer.parseInt(courseName);
-					Topic topic = new Topic();
-					topic.setName(topicName);
-					Courses course = new Courses();
-					course.setId(courseId);
-					topic.setCourse(course);
-					TopicDAO topicDAO = new TopicDAO();
-					Topic topicDetails = null;
-					try {
-						topicDetails = topicDAO.selectTopicsIdByName(topic);
-						if (request.getParameter("button").equals("addstatus")) {
+				int courseId = Integer.parseInt(courseName);
+				Topic topic = new Topic();
+				topic.setName(topicName);
+				Courses course = new Courses();
+				course.setId(courseId);
+				topic.setCourse(course);
+				TopicDAO topicDAO = new TopicDAO();
+				try {
+					Topic topicDetails = topicDAO.selectTopicsIdByName(topic);
+					if (request.getParameter("button").equals("addstatus")) {
+						if (statusName.equals("Select")) {
+							request.setAttribute("message", "Select status");
+							doGet(request, response);
+						} else {
 							int statusId = Integer.parseInt(statusName);
 							EmployeeTopic employeeTopic = new EmployeeTopic();
 							topic.setId(topicDetails.getId());
@@ -132,7 +115,6 @@ public class AddStatusServlet extends HttpServlet {
 							employeeTopic.setEmployee(employee);
 							employeeTopic.setCreatedOn(LocalDateTime.now());
 							employeeTopic.setCreatedBy(empid);
-							
 							boolean statusValidation = StatusValidation
 									.addStatusValidation(employeeTopic);
 							if (statusValidation) {
@@ -145,39 +127,31 @@ public class AddStatusServlet extends HttpServlet {
 								else
 									request.setAttribute("message",
 											"Status not added.");
-
 								doGet(request, response);
 							} else {
 								request.setAttribute("message",
-										"Unable to add Status");
-
+										"Invalid inputs");
 								doGet(request, response);
 							}
-
-						} else if (request.getParameter("button").equals(
-								"checkstatusexist")) {
-
-							EmployeeTopicStatusDAO employeeTopicStatusDAO = new EmployeeTopicStatusDAO();
-							EmployeeTopic employeeTopic = employeeTopicStatusDAO
-									.selectStatusIdByTopicId(topicDetails);
-							if (employeeTopic != null) {
-								if (employeeTopic.getStatus().getId() > 0)
-									response.getWriter().write("1");
-								else
-									response.getWriter().write("0");
-							} else
-								response.getWriter().write("0");
-
 						}
-					} catch (Exception e) {
-						request.setAttribute("message", e.getMessage());
-						doGet(request, response);
-
+					} else if (request.getParameter("button").equals(
+							"checkstatusexist")) {
+						EmployeeTopicStatusDAO employeeTopicStatusDAO = new EmployeeTopicStatusDAO();
+						EmployeeTopic employeeTopic = employeeTopicStatusDAO
+								.selectStatusIdByTopicId(topicDetails);
+						if (employeeTopic != null) {
+							if (employeeTopic.getStatus().getId() > 0)
+								response.getWriter().write("1");
+							else
+								response.getWriter().write("0");
+						} else
+							response.getWriter().write("0");
 					}
+				} catch (Exception e) {
+					request.setAttribute("message", e.getMessage());
+					doGet(request, response);
 				}
 			}
 		}
-
 	}
-
 }

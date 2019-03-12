@@ -10,7 +10,12 @@ import com.chainsys.coursemanagement.connectionutil.ConnectionUtil;
 import com.chainsys.coursemanagement.model.Courses;
 
 public class CourseDAO {
-
+	/**
+	 * This method is used to add course	 * 
+	 * @param course
+	 * @return boolean
+	 * @throws Exception
+	 */
 	public boolean addCourse(Courses course) throws Exception {
 		Connection connection = null;
 		PreparedStatement preparedStatement = null;
@@ -21,9 +26,9 @@ public class CourseDAO {
 			preparedStatement = connection.prepareStatement(query);
 			preparedStatement.setString(1, course.getName());
 			preparedStatement.setInt(2, course.getStatus());
-			preparedStatement.setTimestamp(3, Timestamp.valueOf(course.getCreatedOn()));
+			preparedStatement.setTimestamp(3,
+					Timestamp.valueOf(course.getCreatedOn()));
 			preparedStatement.setInt(4, course.getCreatedBy());
-			
 			int noOfCourseAdded = preparedStatement.executeUpdate();
 			if (noOfCourseAdded > 0) {
 				success = true;
@@ -35,7 +40,12 @@ public class CourseDAO {
 		}
 		return success;
 	}
-
+	/**
+	 * This method is used to update course
+	 * @param course
+	 * @return boolean
+	 * @throws Exception
+	 */
 	public boolean updateCourse(Courses course) throws Exception {
 		Connection connection = null;
 		boolean success = false;
@@ -45,10 +55,10 @@ public class CourseDAO {
 			String query = "UPDATE courses SET name=?,modifiedon=?,modifiedby=? WHERE id=?";
 			preparedStatement = connection.prepareStatement(query);
 			preparedStatement.setString(1, course.getName());
-			preparedStatement.setTimestamp(2, Timestamp.valueOf(course.getModifiedOn()));
+			preparedStatement.setTimestamp(2,
+					Timestamp.valueOf(course.getModifiedOn()));
 			preparedStatement.setInt(3, course.getModifiedBy());
 			preparedStatement.setInt(4, course.getId());
-			
 			int noOfCourseUpdated = preparedStatement.executeUpdate();
 			if (noOfCourseUpdated > 0) {
 				success = true;
@@ -59,9 +69,13 @@ public class CourseDAO {
 			ConnectionUtil.closeConnection(connection, preparedStatement, null);
 		}
 		return success;
-
 	}
-
+	/**
+	 * This method is used to remove course
+	 * @param course
+	 * @return boolean
+	 * @throws Exception
+	 */
 	public boolean removeCourse(Courses course) throws Exception {
 		Connection connection = null;
 		PreparedStatement preparedStatement = null;
@@ -70,9 +84,9 @@ public class CourseDAO {
 			connection = ConnectionUtil.getConnection();
 			String query = "UPDATE courses SET status=?,modifiedon=?,modifiedby=? WHERE id=?";
 			preparedStatement = connection.prepareStatement(query);
-
 			preparedStatement.setInt(1, course.getStatus());
-			preparedStatement.setTimestamp(2, Timestamp.valueOf(course.getModifiedOn()));
+			preparedStatement.setTimestamp(2,
+					Timestamp.valueOf(course.getModifiedOn()));
 			preparedStatement.setInt(3, course.getModifiedBy());
 			preparedStatement.setInt(4, course.getId());
 			int noOfCourseRemoved = preparedStatement.executeUpdate();
@@ -84,11 +98,13 @@ public class CourseDAO {
 		} finally {
 			ConnectionUtil.closeConnection(connection, preparedStatement, null);
 		}
-
 		return success;
-
 	}
-
+	/**
+	 * This method used to select all course
+	 * @return list of courses
+	 * @throws Exception
+	 */
 	public ArrayList<Courses> selectAllCourse() throws Exception {
 		Connection connection = null;
 		ArrayList<Courses> courseList = null;
@@ -110,11 +126,9 @@ public class CourseDAO {
 			}
 		} catch (Exception e) {
 			throw new Exception("Courses not found!");
-		}
-		finally {
+		} finally {
 			ConnectionUtil.closeConnection(connection, preparedStatement, null);
 		}
 		return courseList;
 	}
-
 }

@@ -13,7 +13,12 @@ import com.chainsys.coursemanagement.model.Status;
 import com.chainsys.coursemanagement.model.Topic;
 
 public class EmployeeTopicStatusDAO {
-
+	/**
+	 * This method is used to add status of topics 
+	 * @param employeeTopic
+	 * @return boolean true or false
+	 * @throws Exception
+	 */
 	public boolean addEmployeeTopicStatus(EmployeeTopic employeeTopic)
 			throws Exception {
 		Connection connection = null;
@@ -21,7 +26,6 @@ public class EmployeeTopicStatusDAO {
 		boolean success = false;
 		try {
 			connection = ConnectionUtil.getConnection();
-
 			String query = "INSERT INTO employee_topic(id,emp_id,topics_id,status_id,createdon,createdby) VALUES(employee_topic_id_seq.nextval,?,?,?,?,?)";
 			preparedStatement = connection.prepareStatement(query);
 			preparedStatement.setInt(1, employeeTopic.getEmployee().getId());
@@ -37,11 +41,14 @@ public class EmployeeTopicStatusDAO {
 		} finally {
 			ConnectionUtil.closeConnection(connection, preparedStatement, null);
 		}
-
 		return success;
-
 	}
-
+	/**
+	 * This method is used to update status of topics
+	 * @param employeeTopic
+	 * @return boolean true or false
+	 * @throws Exception
+	 */
 	public boolean updateEmployeeTopicStatus(EmployeeTopic employeeTopic)
 			throws Exception {
 		Connection connection = null;
@@ -49,7 +56,6 @@ public class EmployeeTopicStatusDAO {
 		boolean success = false;
 		try {
 			connection = ConnectionUtil.getConnection();
-
 			String query = "UPDATE employee_topic set status_id=?,modifiedon=?,modifiedby=? WHERE topics_id=? AND emp_id=? ";
 			preparedStatement = connection.prepareStatement(query);
 			preparedStatement.setInt(1, employeeTopic.getStatus().getId());			
@@ -65,11 +71,14 @@ public class EmployeeTopicStatusDAO {
 		} finally {
 			ConnectionUtil.closeConnection(connection, preparedStatement, null);
 		}
-
 		return success;
-
 	}
-
+	/**
+	 * This method is used to select status id using topic id
+	 * @param topic
+	 * @return EmployeeTopic object
+	 * @throws Exception
+	 */
 	public EmployeeTopic selectStatusIdByTopicId(Topic topic) throws Exception {
 		Connection connection = null;
 		PreparedStatement preparedStatement = null;
@@ -95,10 +104,14 @@ public class EmployeeTopicStatusDAO {
 			ConnectionUtil.closeConnection(connection, preparedStatement,
 					resultSet);
 		}
-
 		return employeeTopic;
 	}
-
+	/**
+	 * This method is used to select topics with status
+	 * @param employeeTopic
+	 * @return list of employee topics
+	 * @throws Exception
+	 */
 	public ArrayList<EmployeeTopic> selectTopicsStatusList(
 			EmployeeTopic employeeTopic) throws Exception {
 		Connection connection = null;
@@ -118,8 +131,7 @@ public class EmployeeTopicStatusDAO {
 			resultSet = preparedStatement.executeQuery();
 			if (resultSet != null) {
 				employeeTopicList = new ArrayList<EmployeeTopic>();
-				while (resultSet.next()) {
-					
+				while (resultSet.next()) {					
 					EmployeeTopic employeeTopicStatusDetails = new EmployeeTopic();
 					Status status = new Status();
 					status.setName(resultSet.getString("status"));
@@ -137,10 +149,14 @@ public class EmployeeTopicStatusDAO {
 			ConnectionUtil.closeConnection(connection, preparedStatement,
 					resultSet);
 		}
-
 		return employeeTopicList;
 	}
-
+	/**
+	 * This method is used to select employee using status of topics
+	 * @param employeeTopic
+	 * @return list of employee topics 
+	 * @throws Exception
+	 */
 	public ArrayList<EmployeeTopic> selectEmployeeByStatus(
 			EmployeeTopic employeeTopic) throws Exception {
 		Connection connection = null;
@@ -149,7 +165,6 @@ public class EmployeeTopicStatusDAO {
 		ArrayList<EmployeeTopic> employeeTopicList = null;
 		try {
 			connection = ConnectionUtil.getConnection();
-
 			String query = "select count(topics_id) as topiccount,et.emp_id,e.firstname from employee_topic et "
 					+ " join topics t on et.topics_id =  t.id"
 					+ " join employee e on e.id=et.emp_id"
@@ -162,7 +177,6 @@ public class EmployeeTopicStatusDAO {
 			resultSet = preparedStatement.executeQuery();
 			if (resultSet != null) {
 				employeeTopicList = new ArrayList<EmployeeTopic>();
-
 				while (resultSet.next()) {
 					EmployeeTopic employeeTopicStatusDetails = new EmployeeTopic();
 					Employee employee = new Employee();
@@ -183,7 +197,6 @@ public class EmployeeTopicStatusDAO {
 			ConnectionUtil.closeConnection(connection, preparedStatement,
 					resultSet);
 		}
-
 		return employeeTopicList;
 	}
 }

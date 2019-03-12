@@ -17,36 +17,18 @@ import com.chainsys.coursemanagement.model.Manager;
 import com.chainsys.coursemanagement.model.Project;
 import com.chainsys.coursemanagement.validate.Validation;
 
-/**
- * Servlet implementation class LoginServlet
- */
 @WebServlet("/LoginServlet")
 public class LoginServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
-	/**
-	 * @see HttpServlet#HttpServlet()
-	 */
-	public LoginServlet() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
-
-	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
-	 *      response)
-	 */
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
 	}
 
 	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
-	 *      response)
-	 *      Login Servlet
-	 *      parameters:Username,password
-	 *      return :Logged user page with details
+	 * This method is used to login user 
+	 * parameters:request,response return to
+	 * user profile page
 	 */
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
@@ -57,19 +39,15 @@ public class LoginServlet extends HttpServlet {
 		employee.setPassword(password);
 		employee.setStatus(1);
 		boolean validationResult = Validation.loginValidation(employee);
-		
 		if (validationResult) {
 			EmployeeDAO employeeDAO = new EmployeeDAO();
-			Employee employeeDetails = null;
 			try {
-				
-				employeeDetails = employeeDAO
+				Employee employeeDetails = employeeDAO
 						.selectEmployeeDetailsByEmail(employee);
-				
 				if (employeeDetails != null) {
 					HttpSession httpSession = request.getSession();
-					httpSession.setAttribute("empid",employeeDetails.getId());
-					if (employeeDetails.getIsAdmin() == 1) {						
+					httpSession.setAttribute("empid", employeeDetails.getId());
+					if (employeeDetails.getIsAdmin() == 1) {
 						request.setAttribute("ADMINPROFILE", employeeDetails);
 						RequestDispatcher requestDispatcher = request
 								.getRequestDispatcher("admin.jsp");
@@ -80,7 +58,7 @@ public class LoginServlet extends HttpServlet {
 							manager.setId(employeeDetails.getManager().getId());
 							Manager managerDetails = employeeDAO
 									.selectManagerName(manager);
-							employeeDetails.setManager(managerDetails);							
+							employeeDetails.setManager(managerDetails);
 							request.setAttribute("EMPLOYEEPROFILE",
 									employeeDetails);
 							RequestDispatcher requestDispatcher = request
@@ -91,7 +69,7 @@ public class LoginServlet extends HttpServlet {
 							Manager manager = new Manager();
 							manager.setId(employeeDetails.getId());
 							Project projectDetails = projectDAO
-									.selectProject(manager);							
+									.selectProject(manager);
 							request.setAttribute("MANAGERPROFILE",
 									employeeDetails);
 							request.setAttribute("PROJECTDETAILS",
@@ -101,16 +79,14 @@ public class LoginServlet extends HttpServlet {
 							requestDispatcher.forward(request, response);
 						}
 					}
-				}
-				else
-				{
+				} else {
 					request.setAttribute("show", true);
-					request.setAttribute("message", "Invalid username & password");
+					request.setAttribute("message",
+							"Invalid username & password");
 					RequestDispatcher requestDispatcher = request
 							.getRequestDispatcher("login.jsp");
 					requestDispatcher.forward(request, response);
 				}
-				
 			} catch (Exception e) {
 				request.setAttribute("show", true);
 				request.setAttribute("message", e.getMessage());

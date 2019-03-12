@@ -19,42 +19,29 @@ import com.chainsys.coursemanagement.dao.ProjectDAO;
 import com.chainsys.coursemanagement.model.Department;
 import com.chainsys.coursemanagement.model.Manager;
 import com.chainsys.coursemanagement.model.Project;
+import com.chainsys.coursemanagement.validate.ProjectValidation;
 
-/**
- * Servlet implementation class AddProjectServlet
- */
+
 @WebServlet("/AddProjectServlet")
 public class AddProjectServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-
+	
 	/**
-	 * @see HttpServlet#HttpServlet()
-	 */
-	public AddProjectServlet() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
-
-	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
-	 *      response)
+	 * This method is used to load drop down in addproject.jsp
+	 * parameters:request,response
+	 * return: redirect to addproject.jsp
 	 */
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		EmployeeDAO employeeDAO = new EmployeeDAO();
-
-		List<Manager> managerList = null;
-		ArrayList<Department> departmentList = null;
+		EmployeeDAO employeeDAO = new EmployeeDAO(); 
 		try {
-			managerList = employeeDAO.selectNonProjectManagersList();
-			if (managerList != null) {
+			List<Manager> managerList = employeeDAO.selectNonProjectManagersList();
+			if (managerList != null && !managerList.isEmpty()) {
 				request.setAttribute("MANAGERLIST", managerList);
 				DepartmentDAO departmentDAO = new DepartmentDAO();
-				departmentList = departmentDAO.selectAllDepartment();
-				if (departmentList != null) {
+				ArrayList<Department> departmentList = departmentDAO.selectAllDepartment();
+				if (departmentList != null && !departmentList.isEmpty()) {
 					request.setAttribute("DEPARTMENTLIST", departmentList);
-
 					if (request.getAttribute("message") != null)
 						request.setAttribute("message",
 								request.getAttribute("message"));
@@ -82,25 +69,19 @@ public class AddProjectServlet extends HttpServlet {
 		}
 
 	}
-
 	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
-	 *      response)
+	 * This method is used to add project
+	 * parameters:request,response
+	 * return: redirect to addproject.jsp
 	 */
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-
 		String projectName = request.getParameter("projectname");
-
 		if (!projectName.equals(null) || !projectName.isEmpty()) {
-
 			String departmentName = request.getParameter("department");
 			if (departmentName.equals("Select")) {
-
 				request.setAttribute("message", "Select department");
 				doGet(request, response);
-
 			} else {
 				int departmentID = Integer.parseInt(departmentName);
 				String managerName = request.getParameter("managername");
@@ -115,35 +96,39 @@ public class AddProjectServlet extends HttpServlet {
 					project.setManager(manager);
 					project.setName(projectName);
 					project.setCreatedOn(LocalDateTime.now());
-					HttpSession httpSession=request.getSession();					
-					project.setCreatedBy((int)httpSession.getAttribute("empid"));
-					ProjectDAO projectDAO = new ProjectDAO();
-					boolean noOfProjectAdded = false;
-					try {
-						noOfProjectAdded = projectDAO.addProject(project);
-						if (noOfProjectAdded)
-							request.setAttribute("message", "Project added");
-						else
-							request.setAttribute("message", "Project not added");
-						doGet(request, response);
-					} catch (Exception e) {
-						request.setAttribute("message", e.getMessage());
+					HttpSession httpSession = request.getSession();
+					project.setCreatedBy((int) httpSession
+							.getAttribute("empid"));
+					boolean validationResult = ProjectValidation
+							.addProjectValidation(project);
+					if (validationResult) {
+						ProjectDAO projectDAO = new ProjectDAO();
+						boolean noOfProjectAdded = false;
+						try {
+							noOfProjectAdded = projectDAO.addProject(project);
+							if (noOfProjectAdded)
+								request.setAttribute("message", "Project added");
+							else
+								request.setAttribute("message",
+										"Project not added");
+							doGet(request, response);
+						} catch (Exception e) {
+							request.setAttribute("message", e.getMessage());
+							doGet(request, response);
+						}
+					} else {
+						request.setAttribute("message", "Invalid inputs");
 						doGet(request, response);
 					}
-
 				} else {
 					request.setAttribute("message", "Select manager");
 					doGet(request, response);
 				}
-
 			}
 		}
-
 		else {
 			request.setAttribute("message", "ProjectName is empty");
 			doGet(request, response);
 		}
-
 	}
-
 }

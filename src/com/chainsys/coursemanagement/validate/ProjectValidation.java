@@ -11,8 +11,17 @@ public class ProjectValidation {
 		} else {
 			if (project.getManager().getId() < 0) {
 				validationResult = false;
+			} else {
+				if (!project.getName().equals(null)
+						&& !project.getName().isEmpty()) {
+					if (project.getName().matches("[a-zA-Z]+"))
+						validationResult = true;
+					else
+						validationResult = false;
+				} else {
+					validationResult = false;
+				}
 			}
-			
 
 		}
 		return validationResult;

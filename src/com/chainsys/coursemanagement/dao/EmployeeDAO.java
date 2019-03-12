@@ -14,16 +14,19 @@ import com.chainsys.coursemanagement.model.Job;
 import com.chainsys.coursemanagement.model.Manager;
 
 public class EmployeeDAO {
-
+	/**
+	 * This method is used to add employee with manager
+	 * @param employee
+	 * @return boolean true or false
+	 * @throws Exception
+	 */
 	public boolean addEmployeeWithManager(Employee employee) throws Exception {
 		Connection connection = null;
 		PreparedStatement preparedStatement = null;
 		int registrationResult = 0;
 		boolean success = false;
 		try {
-
 			connection = ConnectionUtil.getConnection();
-
 			String query = "INSERT INTO employee(id,firstname,lastname,phonenumber,email,password,department_id,job_id,status,isadmin,ismanager,manager_id,createdon,createdby) VALUES(employee_id_seq.nextval,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 			preparedStatement = connection.prepareStatement(query);
 			preparedStatement.setString(1, employee.getFirstName());
@@ -36,12 +39,10 @@ public class EmployeeDAO {
 			preparedStatement.setInt(8, employee.getStatus());
 			preparedStatement.setInt(9, employee.getIsAdmin());
 			preparedStatement.setInt(10, employee.getIsManager());
-
 			preparedStatement.setInt(11, employee.getManager().getId());
 			preparedStatement.setTimestamp(12,
 					Timestamp.valueOf(employee.getCreatedOn()));
 			preparedStatement.setInt(13, employee.getCreatedBy());
-
 			registrationResult = preparedStatement.executeUpdate();
 			if (registrationResult > 0)
 				success = true;
@@ -51,28 +52,21 @@ public class EmployeeDAO {
 			ConnectionUtil.closeConnection(connection, preparedStatement, null);
 		}
 		return success;
-
 	}
-
+	/**
+	 * This method is used to add employee without manager 
+	 * @param employee
+	 * @return boolean true or false
+	 * @throws Exception
+	 */
 	public boolean addEmployeeWithOutManager(Employee employee)
 			throws Exception {
 		Connection connection = null;
 		PreparedStatement preparedStatement = null;
 		int registrationResult = 0;
-		boolean success = false;
-
-		System.out.println(employee.getFirstName() + " "
-				+ employee.getLastName() + " " + employee.getPhonenumber()
-				+ " " + employee.getEmail() + " " + employee.getPassword()
-				+ " " + employee.getDepartment().getId() + " "
-				+ employee.getJob().getId() + " " + employee.getStatus() + " "
-				+ employee.getIsAdmin() + " " + employee.getIsManager() + " "
-
-				+ employee.getCreatedOn() + " " + employee.getCreatedBy() + " "
-				+ employee.getModifiedOn() + " " + employee.getModifiedBy());
+		boolean success = false;		
 		try {
 			connection = ConnectionUtil.getConnection();
-
 			String query = "INSERT INTO employee(id,firstname,lastname,phonenumber,email,password,department_id,job_id,status,isadmin,ismanager,createdon,createdby) VALUES(employee_id_seq.nextval,?,?,?,?,?,?,?,?,?,?,?,?)";
 			preparedStatement = connection.prepareStatement(query);
 			preparedStatement.setString(1, employee.getFirstName());
@@ -88,7 +82,6 @@ public class EmployeeDAO {
 			preparedStatement.setTimestamp(11,
 					Timestamp.valueOf(employee.getCreatedOn()));
 			preparedStatement.setInt(12, employee.getCreatedBy());
-
 			registrationResult = preparedStatement.executeUpdate();
 			System.out.println(registrationResult);
 			if (registrationResult > 0)
@@ -101,9 +94,13 @@ public class EmployeeDAO {
 			ConnectionUtil.closeConnection(connection, preparedStatement, null);
 		}
 		return success;
-
 	}
-
+	/**
+	 * This method is used to remove employee
+	 * @param employee
+	 * @return boolean true or false
+	 * @throws Exception
+	 */
 	public boolean removeEmployee(Employee employee) throws Exception {
 		Connection connection = null;
 		PreparedStatement preparedStatement = null;
@@ -111,7 +108,6 @@ public class EmployeeDAO {
 		boolean success = false;
 		try {
 			connection = ConnectionUtil.getConnection();
-
 			String query = "UPDATE employee SET status=? WHERE id=?";
 			preparedStatement = connection.prepareStatement(query);
 
@@ -126,16 +122,19 @@ public class EmployeeDAO {
 			ConnectionUtil.closeConnection(connection, preparedStatement, null);
 		}
 		return success;
-
 	}
-
+	/**
+	 * This method is used to select details using email
+	 * @param employee
+	 * @return Employee object
+	 * @throws Exception
+	 */
 	public Employee selectEmployeeDetailsByEmail(Employee employee)
 			throws Exception {
 		Connection connection = null;
 		PreparedStatement preparedStatement = null;
 		ResultSet resultSet = null;
 		Employee employeeDetails = null;
-
 		try {
 			connection = ConnectionUtil.getConnection();
 			String query = "select e.id as employeeid,e.firstname as firstname,e.lastname as lastname,e.phonenumber as phonenumber,e.email as email,e.password as password,d.name as departmentname,j.name as jobname,e.isadmin as isadmin,e.ismanager as ismanager,e.manager_id as managerid from employee e "
@@ -147,7 +146,6 @@ public class EmployeeDAO {
 			preparedStatement.setString(2, employee.getPassword());
 			preparedStatement.setInt(3, employee.getStatus());
 			resultSet = preparedStatement.executeQuery();
-
 			if (resultSet != null) {
 				while (resultSet.next()) {
 					employeeDetails = new Employee();
@@ -174,7 +172,6 @@ public class EmployeeDAO {
 					Job job = new Job();
 					job.setName(resultSet.getString("jobname"));
 					employeeDetails.setJob(job);
-
 				}
 			}
 		} catch (Exception e) {
@@ -185,7 +182,12 @@ public class EmployeeDAO {
 		}
 		return employeeDetails;
 	}
-
+	/**
+	 * This method is used to select employee details using id
+	 * @param employee
+	 * @return Employee object
+	 * @throws Exception
+	 */
 	public Employee selectEmployeeDetailsById(Employee employee)
 			throws Exception {
 		Connection connection = null;
@@ -233,7 +235,11 @@ public class EmployeeDAO {
 		}
 		return employeeDetails;
 	}
-
+	/**
+	 * This method used to select managers list, who are not in project
+	 * @return list of managers
+	 * @throws Exception
+	 */
 	public List<Manager> selectNonProjectManagersList() throws Exception {
 		Connection connection = null;
 		PreparedStatement preparedStatement = null;
@@ -248,16 +254,13 @@ public class EmployeeDAO {
 				managerList = new ArrayList<Manager>();
 				while (resultSet.next()) {
 					Manager manager = new Manager();
-
 					manager.setId(resultSet.getInt("id"));
 					if (resultSet.getString("lastname") != null)
 						manager.setName(resultSet.getString("firstname")
 								+ resultSet.getString("lastname"));
 					else
 						manager.setName(resultSet.getString("firstname"));
-
 					managerList.add(manager);
-
 				}
 			}
 		} catch (Exception e) {
@@ -268,7 +271,11 @@ public class EmployeeDAO {
 		}
 		return managerList;
 	}
-
+	/**
+	 * This method is used to select employee details
+	 * @return list of employee 
+	 * @throws Exception
+	 */
 	public List<Employee> selectEmployee() throws Exception {
 		List<Employee> employeeDetails = null;
 		Connection connection = null;
@@ -276,10 +283,8 @@ public class EmployeeDAO {
 		ResultSet resultSet = null;
 		try {
 			connection = ConnectionUtil.getConnection();
-
 			String query = "SELECT id,firstname,lastname FROM employee";
 			preparedStatement = connection.prepareStatement(query);
-
 			resultSet = preparedStatement.executeQuery();
 			if (resultSet != null) {
 				employeeDetails = new ArrayList<Employee>();
@@ -290,7 +295,6 @@ public class EmployeeDAO {
 					employee.setLastName(resultSet.getString("lastname"));
 					employeeDetails.add(employee);
 				}
-
 			}
 		} catch (Exception e) {
 			throw new Exception("Unable to find employee record");
@@ -300,7 +304,12 @@ public class EmployeeDAO {
 		}
 		return employeeDetails;
 	}
-
+	/**
+	 * This method is used to select manager details using id
+	 * @param manager
+	 * @return  manager object
+	 * @throws Exception
+	 */
 	public Manager selectManagerName(Manager manager) throws Exception {
 		Connection connection = null;
 		Manager managerDetails = null;

@@ -22,46 +22,30 @@ import com.chainsys.coursemanagement.model.Job;
 import com.chainsys.coursemanagement.model.Manager;
 import com.chainsys.coursemanagement.validate.RegisterValidation;
 
-/**
- * Servlet implementation class RegistrationServlet
- */
+
 @WebServlet("/RegistrationServlet")
 public class RegistrationServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-
 	/**
-	 * @see HttpServlet#HttpServlet()
-	 */
-	public RegistrationServlet() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
-
-	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
-	 *      response)
+	 * This method is used to load drop down in registration.jsp page 
+	 * parameters:request,response 
+	 * return to registration.jsp
 	 */
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-
 		DepartmentDAO departmentDAO = new DepartmentDAO();
 		JobDAO jobDAO = new JobDAO();
-		EmployeeDAO employeeDAO = new EmployeeDAO();
-		ArrayList<Department> departmentList = null;
-		ArrayList<Job> jobList = null;
-		List<Employee> employeeList = null;
+		EmployeeDAO employeeDAO = new EmployeeDAO();	
 		try {
-			departmentList = departmentDAO.selectAllDepartment();
+			ArrayList<Department> departmentList = departmentDAO.selectAllDepartment();
 			if (departmentList != null) {
-				jobList = jobDAO.selectAllJob();
+				ArrayList<Job> jobList = jobDAO.selectAllJob();
 				if (jobList != null) {
-					employeeList = employeeDAO.selectEmployee();
+					List<Employee> employeeList = employeeDAO.selectEmployee();
 					if (employeeList != null) {
 						request.setAttribute("DEPARTMENTLIST", departmentList);
 						request.setAttribute("JOBLIST", jobList);
 						request.setAttribute("MANAGERLIST", employeeList);
-
 						if (request.getAttribute("message") != null)
 							request.setAttribute("message",
 									request.getAttribute("message"));
@@ -87,80 +71,85 @@ public class RegistrationServlet extends HttpServlet {
 			doGet(request, response);
 		}
 	}
-
 	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
-	 *      response)
+	 * This method is used to register user 
+	 * parameters:request,response 
+	 * return to registration.jsp
 	 */
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-
 		String firstName = request.getParameter("firstname");
 		String lastName = request.getParameter("lastname");
 		String phoneNumber = request.getParameter("phonenumber");
 		String email = request.getParameter("email");
 		String password = request.getParameter("password");
-		int departmentId = Integer.parseInt(request.getParameter("department"));
-		int jobId = Integer.parseInt(request.getParameter("job"));
-		Employee employee = new Employee();
-		employee.setFirstName(firstName);
-		employee.setLastName(lastName);
-		employee.setPhonenumber(phoneNumber);
-		employee.setEmail(email);
-		employee.setPassword(password);
-		Department department = new Department();
-		department.setId(departmentId);
-		employee.setDepartment(department);
-		Job job = new Job();
-		job.setId(jobId);
-		employee.setJob(job);
-		employee.setStatus(1);
-		employee.setIsAdmin(0);
-
-		if (!request.getParameter("managername").equals("Select")) {
-			employee.setIsManager(0);
-			Manager manager = new Manager();
-			manager.setId(Integer.parseInt(request.getParameter("managername")));
-			employee.setManager(manager);
-		} else {
-			employee.setIsManager(1);
-
-		}
-		HttpSession httpSession=request.getSession();
-		employee.setCreatedOn(LocalDateTime.now());
-		employee.setCreatedBy((int)httpSession.getAttribute("empid"));
-		employee.setModifiedOn(null);
-		employee.setModifiedBy(0);
-		boolean registerationValidation = RegisterValidation
-				.registerValidation(employee);
-		if (registerationValidation) {
-			EmployeeDAO employeeDAO = new EmployeeDAO();
-			boolean registrationResult = false;
-			
-			try {
-				if (employee.getIsManager() == 1)
-					registrationResult = employeeDAO
-							.addEmployeeWithOutManager(employee);
-				else
-					registrationResult = employeeDAO
-							.addEmployeeWithManager(employee);
-
-				if (registrationResult)
-					request.setAttribute("message", "Registered succesfully");
-				else
-					request.setAttribute("message", "Not Registered ");
-				doGet(request, response);
-			} catch (Exception e) {
-				
-				request.setAttribute("message", e.getMessage());
+		String departmentName = request.getParameter("department");
+		if (!("Select").equals(departmentName)) {
+			int departmentId = Integer.parseInt(departmentName);
+			String jobName = request.getParameter("job");
+			if (!("Select").equals(jobName)) {
+				int jobId = Integer.parseInt(jobName);
+				Employee employee = new Employee();
+				employee.setFirstName(firstName);
+				employee.setLastName(lastName);
+				employee.setPhonenumber(phoneNumber);
+				employee.setEmail(email);
+				employee.setPassword(password);
+				Department department = new Department();
+				department.setId(departmentId);
+				employee.setDepartment(department);
+				Job job = new Job();
+				job.setId(jobId);
+				employee.setJob(job);
+				employee.setStatus(1);
+				employee.setIsAdmin(0);
+				if (!request.getParameter("managername").equals("Select")) {
+					employee.setIsManager(0);
+					Manager manager = new Manager();
+					manager.setId(Integer.parseInt(request
+							.getParameter("managername")));
+					employee.setManager(manager);
+				} else {
+					employee.setIsManager(1);
+				}
+				HttpSession httpSession = request.getSession();
+				employee.setCreatedOn(LocalDateTime.now());
+				employee.setCreatedBy((int) httpSession.getAttribute("empid"));
+				employee.setModifiedOn(null);
+				employee.setModifiedBy(0);
+				boolean registerationValidation = RegisterValidation
+						.registerValidation(employee);
+				if (registerationValidation) {
+					EmployeeDAO employeeDAO = new EmployeeDAO();
+					boolean registrationResult = false;
+					try {
+						if (employee.getIsManager() == 1)
+							registrationResult = employeeDAO
+									.addEmployeeWithOutManager(employee);
+						else
+							registrationResult = employeeDAO
+									.addEmployeeWithManager(employee);
+						if (registrationResult)
+							request.setAttribute("message",
+									"Registered succesfully");
+						else
+							request.setAttribute("message", "Not Registered ");
+						doGet(request, response);
+					} catch (Exception e) {
+						request.setAttribute("message", e.getMessage());
+						doGet(request, response);
+					}
+				} else {
+					request.setAttribute("message", "Invalid inputs");
+					doGet(request, response);
+				}
+			} else {
+				request.setAttribute("message", "Select job");
 				doGet(request, response);
 			}
 		} else {
-			request.setAttribute("message", "Unable to add record");
+			request.setAttribute("message", "Select department");
 			doGet(request, response);
 		}
-
 	}
-
 }

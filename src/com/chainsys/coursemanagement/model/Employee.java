@@ -3,7 +3,6 @@ package com.chainsys.coursemanagement.model;
 import java.time.LocalDateTime;
 
 public class Employee {
-
 	private int id;
 	private String firstName;
 	private String lastName;
@@ -13,18 +12,13 @@ public class Employee {
 	private Department department;
 	private Job job;
 	private int status;
-	
 	private int isAdmin;
 	private int isManager;
-	
 	private Manager manager;
-	
 	private LocalDateTime createdOn;
 	private int createdBy;
 	private LocalDateTime modifiedOn;
 	private int modifiedBy;
-	
-	
 
 	public LocalDateTime getCreatedOn() {
 		return createdOn;
@@ -82,7 +76,6 @@ public class Employee {
 		this.isManager = isManager;
 	}
 
-	
 	public int getStatus() {
 		return status;
 	}

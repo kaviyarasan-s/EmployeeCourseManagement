@@ -6,22 +6,38 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title>update topic</title>
-<script	src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script type="text/javascript" src="script/jquery.min.js"></script>
+
 <script>
-	$(document).ready(function() {
+	$(document).ready(
+			function() {
 				$("#course").change(
+						
 						function() {
+							$("#topic").empty();
 							$.post('ViewTopicServlet', {
 								courseId : $("#course").val()
-							},function(response) {
-										var list = response.split(',');
-										for ( var item in list) {
-											$('#topic').append(
-													"<option value="+list[item]+">"
-															+ list[item]
-															+ "</option>");
-										}
-									});
+							}, function(response) {
+								if (response != null&&response!='') {
+									var list = response.split(',');
+									$('#topic').append(
+											"<option value='Select'>"
+													+ "Select" + "</option>");
+									for ( var item in list) {
+										$('#topic').append(
+												"<option value="+list[item]+">"
+														+ list[item]
+														+ "</option>");
+									}
+								}
+
+								else {
+									$('#topic').append(
+											"<option value='Select'>"
+													+ "Topics not found!"
+													+ "</option>");
+								}
+							});
 						});
 			});
 </script>
@@ -41,7 +57,6 @@
 		<div style="margin-top: 1%">
 			Topic List: <select name="topicname" id="topic">
 				<option value="Select">Select</option>
-
 			</select>
 		</div>
 		<div style="margin-top: 1%">
